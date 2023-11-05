@@ -1,1 +1,0 @@
-# QuizPlatform-Frontend

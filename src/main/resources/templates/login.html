@@ -114,15 +114,7 @@
     <p>Don't have an account? <a href="#">Register here</a></p>
 </div>
 <script>
-
-    /*window.addEventListener('beforeunload', function (e) {
-        // Display a confirmation message when the user tries to leave the page
-        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
-    });*/
-
     document.getElementById("loginButton").addEventListener("click", function() {
-        // You can add your login logic here
-
         let requestData = {
             username: $("#username").val(),
             password: $("#password").val()

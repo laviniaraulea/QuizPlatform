@@ -37,4 +37,9 @@ public class LogInController {
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
+    @GetMapping
+    public String login() {
+        return "login";
+    }
 }

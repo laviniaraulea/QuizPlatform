@@ -3,16 +3,14 @@ package com.example.QuizPlatformApplication.controller;
 import com.example.QuizPlatformApplication.model.User;
 import com.example.QuizPlatformApplication.security.jwttoken.JwtService;
 import com.example.QuizPlatformApplication.service.interfaces.AuthenticationServiceInterface;
-import com.example.QuizPlatformApplication.service.interfaces.UserServiceInterface;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/login")
@@ -31,9 +29,12 @@ public class LogInController {
      * @return jwtToken sub forma de string daca se matchuiesc
      * */
     @PostMapping("/auth")
-    public @ResponseBody ResponseEntity<?> login(@RequestBody User user){
+    public @ResponseBody ResponseEntity<?> login(@RequestBody User user, HttpServletRequest request){
         if(authenticationService.logIn(user)){
-            return ResponseEntity.ok(jwtService.generateToken(user));
+            String token = jwtService.generateToken(user);
+            HttpSession session = request.getSession();
+            session.setAttribute("token", token);
+            return ResponseEntity.ok(token);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -41,5 +42,14 @@ public class LogInController {
     @GetMapping
     public String login() {
         return "login";
+    }
+
+    @GetMapping("/mainPage")
+    public String main(Model model, HttpSession session) {
+        String token = (String) session.getAttribute("token");
+
+        // Pass the token to view
+        model.addAttribute("token", token);
+        return "mainPage";
     }
 }

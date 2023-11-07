@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Platform</title>
+    <!-- Include Google Fonts for custom fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- Include Bootstrap JS (Popper.js and Bootstrap) -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css">
+    <style>
+        body {
+            background: linear-gradient(120deg, #3498db, #8e44ad);
+            font-family: 'Montserrat', sans-serif; /* Updated font */
+            text-align: center;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #C0D6E4;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive; /* Updated font */
+            font-size: 36px;
+            color: #5a4667; /* Updated font color */
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif; /* Updated font */
+            font-size: 36px;
+            color: #5a4667; /* Updated font color */
+            margin-bottom: 20px;
+        }
+
+        .app-description {
+            background-color: #3498db;
+            padding: 20px;
+            border-radius: 10px;
+            color: #fff;
+        }
+
+        .quiz-list {
+            margin-top: 20px;
+        }
+
+        .quiz-list table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            border-radius: 100px; /* Rounded table corners */
+        }
+
+        .quiz-list table, .quiz-list th, .quiz-list td {
+            border: 1px solid #fff;
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        .quiz-list th, .quiz-list td {
+            background-color: #5a4667;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .quiz-list th {
+            background-color: #5a4667;
+            color: #fff;
+            border-radius: 10px;
+        }
+
+        .quiz-list tbody tr:hover {
+            background-color: #5a4667;
+        }
+
+        .btn {
+            background-color: #8e44ad;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 12px 24px; /* Slightly bigger buttons */
+            font-size: 18px; /* Larger font size */
+        }
+
+        .btn:hover {
+            background-color: #6c3483;
+        }
+
+        .btn-details {
+            background-color: #3498db;
+        }
+
+        .btn-take-quiz {
+            background-color: #27ae60;
+        }
+
+        .btn-create-quiz {
+            background-color: #e74c3c;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Welcome to Quiz Platform</h1>
+
+    <div class="app-description">
+        <p>This is an educational platform designed to bring knowledge to the world.</p>
+        <p>Explore a variety of quizzes and test your knowledge on different subjects.</p>
+        <p>Improve your skills and have fun learning with Quiz Platform.</p>
+    </div>
+
+    <div class="quiz-list">
+        <h2>Available Quizzes</h2>
+        <table id="quizzesTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th data-field="passingScore" data-valign="middle" data-align="center" data-formatter="passingScoreFormatter">Passing Score</th>
+                    <th data-field="timeLimit" data-valign="middle" data-align="center" data-formatter="timeLimitFormatter">Time Limit</th>
+                    <th data-field="category" data-valign="middle" data-align="center" data-formatter="categoryFormatter">Category</th>
+                    <th data-field="difficulty" data-valign="middle" data-align="center" data-formatter="difficultyFormatter">Difficulty</th>
+                    <th data-formatter="buttonsFormatter" data-valign="middle" data-align="center">Action</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="create-quiz-button">
+        <button id="createQuizBtn" class="btn btn-create-quiz">Create Quiz</button>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script>
+</body>
+</html>
+
+<script th:inline="javascript">
+    const quizzesTableRef = $("#quizzesTable");
+    let bearerToken = /*[[${token}]]*/ 'default'; // De asta am nevoie, altfel nu am autorizatie sa fac API request-uri
+    const createQuizBtnRef = $("#createQuizBtn")
+
+    $(document).ready(function () {
+
+        // tooltip to see the quiz details on mouse hover
+        quizzesTableRef.on('mouseenter', 'button[data-toggle="tooltip"]', function () {
+            const tooltipId = $(this).attr('id');
+            let description = $('#' + tooltipId).next('.tooltip-description').text();
+            if (description === "") description = "{ }";
+            $('#' + tooltipId).tooltip({
+                title: description,
+                trigger: 'manual',
+                template: '<div class="tooltip" role = "tooltip"><div class="tooltip-inner tooltip-inner-details larger-tooltip"></div></div>',
+                boundary: 'window',
+                offset: '0, 10'
+            }).tooltip('show');
+        }).on('mouseleave', 'button[data-toggle="tooltip"]', function () {
+           const tooltipId = $(this).attr('id');
+           $('#' + tooltipId).tooltip('hide');
+        });
+
+        quizzesTableRef.bootstrapTable({
+            method: 'get',
+            url: '/quiz/get/quizzes',
+            buttonsAlign: 'left',
+            toolbarAlign: 'right',
+            showColumns: true,
+            striped: true,
+            stickyHeader: true,
+            sidePagination: 'client',
+            pagination: true,
+            pageList: [10, 20, 50],
+            ajaxOptions: {
+                headers: {
+                    Authorization: `Bearer ${bearerToken}`
+                }
+            }
+        });
+    });
+
+    function timeLimitFormatter(value, row, index) {
+        return row.timeLimit + "min";
+    }
+
+    function passingScoreFormatter(value, row, index) {
+        return row.passingScore + "%";
+    }
+
+    function buttonsFormatter(value, row, index) {
+        const tooltipId = "tooltip_" + index;
+
+        let detailsBtn = '<button type="button" class="btnDetails btn btn-details" data-toggle="tooltip" data-placement="bottom" id="' + tooltipId + '">Hover for details</button>\n';
+        detailsBtn += '<div class="tooltip-description" style="display: none;">' + row.description + '</div>';
+
+        return detailsBtn +
+                '<button class="btnTakeQuiz btn btn-take-quiz">Take Quiz</button>'
+    }
+
+    function categoryFormatter(value, row, index) {
+        let category = row.category;
+        if(category === 'GENERAL_KNOWLEDGE')
+            return "General Knowledge";
+        else if(category === "SCIENCE_AND_NATURE")
+            return "Science and Nature";
+        else if(category === "HISTORY")
+            return "History";
+        else if(category === "FOOD_AND_COOKING")
+            return "Food and Cooking";
+        else if(category === "ART_AND_ARTISTS")
+            return "Art & Artists";
+        else if(category === "FAMOUS_PERSONALITIES")
+            return "Famous personalities";
+        else
+            return "Other";
+    }
+
+    function difficultyFormatter(value, row, index) {
+        let difficulty = row.difficulty;
+        if(difficulty === "HARD")
+            return "Hard";
+        else if(difficulty === "MEDIUM")
+            return "Medium";
+        else
+            return "Easy";
+    }
+
+    window.moderateEvents = {
+        'click .btnTakeQuiz': function (e, value, row) {
+            // TODO: Aici e task-ul de "Take Quiz"
+        }
+    }
+
+    createQuizBtnRef.click(function () {
+        // TODO: Aici e task-ul de "Create Quiz"
+    });
+</script>

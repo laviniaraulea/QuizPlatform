@@ -1,14 +1,15 @@
 package com.example.QuizPlatformApplication.service.implementation;
 
-import com.example.QuizPlatformApplication.model.Quiz;
-import com.example.QuizPlatformApplication.model.QuizEntry;
-import com.example.QuizPlatformApplication.repository.QuizEntryRepoInterface;
-import com.example.QuizPlatformApplication.repository.QuizRepoInterface;
+import com.example.QuizPlatformApplication.controller.dto.AnswerDTO;
+import com.example.QuizPlatformApplication.model.*;
+import com.example.QuizPlatformApplication.repository.*;
 import com.example.QuizPlatformApplication.service.ServiceException;
 import com.example.QuizPlatformApplication.service.interfaces.QuizServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,15 @@ public class QuizServiceImpl implements QuizServiceInterface {
 
     @Autowired
     private QuizEntryRepoInterface quizEntryRepoInterface;
+
+    @Autowired
+    private QuizProgressRepoInterface quizProgressRepoInterface;
+
+    @Autowired
+    private QuizUserAnswerRepoInterface quizUserAnswerRepoInterface;
+
+    @Autowired
+    private QuizOptionRepoInterface quizOptionRepoInterface;
 
     @Override
     public void createQuiz(Quiz quiz) throws ServiceException {
@@ -102,5 +112,80 @@ public class QuizServiceImpl implements QuizServiceInterface {
     @Override
     public List<Quiz> getAllQuizzes() {
         return quizRepoInterface.findAll();
+    }
+
+    @Override
+    public boolean isQuizStarted(Quiz quiz, User user) {
+        List<QuizProgress> quizProgresses = quizProgressRepoInterface.findByQuizAndUser(quiz, user);
+        return quizProgresses.size() != 0 && !quizProgresses.get(quizProgresses.size()-1).getHasEnded();
+    }
+
+    @Override
+    public QuizProgress getLastQuizProgress(Quiz quiz, User user) {
+        List<QuizProgress> quizProgresses = quizProgressRepoInterface.findByQuizAndUser(quiz, user);
+        if (quizProgresses.size() == 0) {
+            return null;
+        }
+        return quizProgresses.get(quizProgresses.size()-1);
+    }
+
+    @Override
+    public void startQuiz(Quiz quiz, User user) throws ServiceException {
+        if (quiz == null || user == null) {
+            throw new ServiceException("Invalid quiz.");
+        }
+
+        if (isQuizStarted(quiz, user)) {
+            throw new ServiceException("Quiz already started.");
+        }
+
+        QuizProgress quizProgress = new QuizProgress();
+        quizProgress.setQuiz(quiz);
+        quizProgress.setUser(user);
+        quizProgress.setHasEnded(false);
+        quizProgress.setStartTime(LocalDateTime.now());
+        quizProgressRepoInterface.save(quizProgress);
+    }
+
+    @Override
+    public void endQuiz(Quiz quiz, User user, List<AnswerDTO> userAnswers) throws ServiceException {
+        if(quiz == null || user == null || userAnswers == null) {
+            throw new ServiceException("Invalid data.");
+        }
+
+        if (!isQuizStarted(quiz, user)) {
+            throw new ServiceException("Quiz not started.");
+        }
+
+        QuizProgress quizProgress = getLastQuizProgress(quiz, user);
+        quizProgress.setHasEnded(true);
+        quizProgress.setEndTime(LocalDateTime.now());
+        quizProgressRepoInterface.save(quizProgress);
+
+        try {
+            for(AnswerDTO answerDTO : userAnswers) {
+                QuizUserAnswer quizUserAnswer = new QuizUserAnswer();
+                quizUserAnswer.setQuizProgress(quizProgress);
+
+                Long quizEntryId = Long.parseLong(answerDTO.getQuestionId());
+
+                quizUserAnswer.setQuizEntry(getQuizEntryById(quizEntryId));
+
+                List<QuizOptions> answers = new ArrayList<>();
+                for (String answer : answerDTO.getAnswersIds()) {
+                    Long quizOptionId = Long.parseLong(answer);
+
+                    Optional<QuizOptions> quizOptions = quizOptionRepoInterface.findById(quizOptionId);
+                    if (quizOptions.isEmpty()) {
+                        throw new ServiceException("Invalid answer.");
+                    }
+                    answers.add(quizOptions.get());
+                }
+                quizUserAnswer.setAnswers(answers);
+                quizUserAnswerRepoInterface.save(quizUserAnswer);
+            }
+        } catch (NumberFormatException e) {
+            throw new ServiceException("Invalid answer.");
+        }
     }
 }

@@ -4,29 +4,31 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "userAnswers")
-public class UserAnswers implements Serializable {
+@Table
+public class QuizProgress implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "quizId")
     private Quiz quiz;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
     private User user;
 
     @Column
-    private String question;
+    private Boolean hasEnded;
 
     @Column
-    private String answer;
+    private LocalDateTime startTime;
 
-    public UserAnswers() {
+    @Column
+    private LocalDateTime endTime;
+
+    public QuizProgress() {
     }
 }

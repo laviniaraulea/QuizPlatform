@@ -2,8 +2,11 @@ package com.example.QuizPlatformApplication.service.interfaces;
 
 
 
+import com.example.QuizPlatformApplication.controller.dto.AnswerDTO;
 import com.example.QuizPlatformApplication.model.Quiz;
 import com.example.QuizPlatformApplication.model.QuizEntry;
+import com.example.QuizPlatformApplication.model.QuizProgress;
+import com.example.QuizPlatformApplication.model.User;
 import com.example.QuizPlatformApplication.service.ServiceException;
 
 import java.util.List;
@@ -19,4 +22,12 @@ public interface QuizServiceInterface {
     QuizEntry getQuizEntryById(Long id) throws ServiceException;
 
     List<Quiz> getAllQuizzes();
+
+    boolean isQuizStarted(Quiz quiz, User user);
+
+    QuizProgress getLastQuizProgress(Quiz quiz, User user);
+
+    void startQuiz(Quiz quiz, User user) throws ServiceException;
+
+    void endQuiz(Quiz quiz, User user, List<AnswerDTO> userAnswers) throws ServiceException;
 }

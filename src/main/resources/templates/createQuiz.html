@@ -732,10 +732,10 @@ refacut dupa ce rezolvam JWT
         var cell3 = row.insertCell(2)
         var cell4 = row.insertCell(3)
         var cell5 = row.insertCell(4)
-        cell1.innerHTML = selectedQuizId.description
-        cell2.innerHTML = selectedQuizId.hint
-        cell3.innerHTML = selectedQuizId.options
-        cell4.innerHTML = selectedQuizId.multipleChoice
+        cell1.innerHTML = quizEntry.question
+        cell2.innerHTML = quizEntry.hint
+        cell3.innerHTML = quizEntry.optionAndExplanation.toString()
+        cell4.innerHTML = quizEntry.isMultipleChoice
         cell5.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
 
 

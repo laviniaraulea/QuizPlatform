@@ -8,17 +8,20 @@ import com.example.QuizPlatformApplication.service.ServiceException;
 import com.example.QuizPlatformApplication.service.implementation.QuizServiceImpl;
 import com.example.QuizPlatformApplication.service.interfaces.QuizServiceInterface;
 import com.example.QuizPlatformApplication.service.interfaces.UserServiceInterface;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/quiz")
+// aici ar trebui sa fie /quiz dupa ce e rezolvat JWT
+@RequestMapping("/login")
 @CrossOrigin
 public class QuizController {
     @Autowired
@@ -35,6 +38,7 @@ public class QuizController {
 
     @PostMapping("/create/quiz")
     public @ResponseBody ResponseEntity<?> createQuiz(@RequestBody QuizDTO quizDTO) {
+        System.out.println("intra");
         try {
             Quiz quiz = new Quiz(userService.getUserByUsername(quizDTO.getUsername_owner()), quizDTO.getCategory(), quizDTO.getDifficulty(),quizDTO.getTimeLimit(),quizDTO.getDescription(),quizDTO.isCanSeeResult(),quizDTO.getPassingScore(),quizDTO.isMinimumScoreRequired());
             quizService.createQuiz(quiz);

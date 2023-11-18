@@ -1,0 +1,117 @@
+body {
+    background: linear-gradient(120deg, #3498db, #8e44ad);
+    font-family: 'Montserrat', sans-serif; /* Updated font */
+    text-align: center;
+    color: #fff;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: #C0D6E4;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-family: 'Pacifico', cursive; /* Updated font */
+    font-size: 36px;
+    color: #5a4667; /* Updated font color */
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-family: 'Montserrat', sans-serif; /* Updated font */
+    font-size: 36px;
+    color: #5a4667; /* Updated font color */
+    margin-bottom: 20px;
+}
+
+h4 {
+    font-family: 'Pacifico', cursive; /* Updated font */
+    font-size: 36px;
+    color: #5a4667; /* Updated font color */
+    margin-bottom: 20px;
+}
+
+.btn {
+    background-color: #8e44ad;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 12px 24px; /* Slightly bigger buttons */
+    font-size: 18px; /* Larger font size */
+}
+
+.btn:hover {
+    background-color: #6c3483;
+}
+
+.content-list table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border-radius: 100px; /* Rounded table corners */
+}
+
+.content-list table, .content-list th, .content-list td {
+    border: 1px solid #fff;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.content-list th, .content-list td {
+    background-color: #5a4667;
+    padding: 15px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.content-list th {
+    background-color: #5a4667;
+    color: #fff;
+    border-radius: 10px;
+}
+
+.content-list tbody tr:hover {
+    background-color: #5a4667;
+}
+
+.create-content label{
+    width: 100%;
+    background-color: #3498db;
+    color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.create-content select {
+    color: #333333;
+    width: 90%;
+    background-color: #2980b9;
+    height: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.create-content input {
+    color: #333333;
+    width: 90%;
+    background-color: #2980b9;
+    height: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+
+
+
+
+

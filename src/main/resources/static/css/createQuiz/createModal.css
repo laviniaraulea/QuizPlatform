@@ -1,0 +1,98 @@
+/* The Modal (background) */
+.create-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.create-content {
+    background-color: #C0D6E4;
+    margin: 5% auto; /* 5% from the top and centered */
+    padding: 20px;
+    border: 15px solid #6c3483;
+    border-radius: 10px;
+    width: 70%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+    color: #6c3483;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #6c3483;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.option-list table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border-radius: 100px; /* Rounded table corners */
+}
+
+.option-list table, .quiz-list th, .quiz-list td {
+    border: 1px solid #fff;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.option-list th, .quiz-list td {
+    background-color: #5a4667;
+    padding: 15px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.option-list th {
+    background-color: #5a4667;
+    color: #fff;
+    border-radius: 10px;
+}
+
+.option-list tbody tr:hover {
+    background-color: #5a4667;
+}
+
+
+.create label{
+    width: 100%;
+    background-color: #3498db;
+    color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.create select {
+    color: #333333;
+    width: 90%;
+    background-color: #2980b9;
+    height: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.create input {
+    color: #333333;
+    width: 90%;
+    background-color: #2980b9;
+    height: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+

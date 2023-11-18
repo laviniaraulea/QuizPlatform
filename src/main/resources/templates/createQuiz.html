@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Platform</title>
+    <!-- Include Google Fonts for custom fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!--
+    refacut dupa ce rezolvam JWT
+    <link rel="stylesheet" href="../static/css/createQuiz/create.css">
+    <link rel="stylesheet" href="../static/css/createQuiz/createModal.css">
+    -->
+    <style>
+        body {
+            background: linear-gradient(120deg, #3498db, #8e44ad);
+            font-family: 'Montserrat', sans-serif; /* Updated font */
+            text-align: center;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #C0D6E4;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive; /* Updated font */
+            font-size: 36px;
+            color: #5a4667; /* Updated font color */
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif; /* Updated font */
+            font-size: 36px;
+            color: #5a4667; /* Updated font color */
+            margin-bottom: 20px;
+        }
+
+        h4 {
+            font-family: 'Pacifico', cursive; /* Updated font */
+            font-size: 36px;
+            color: #5a4667; /* Updated font color */
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #8e44ad;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 12px 24px; /* Slightly bigger buttons */
+            font-size: 18px; /* Larger font size */
+        }
+
+        .btn:hover {
+            background-color: #6c3483;
+        }
+
+        .content-list table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            border-radius: 100px; /* Rounded table corners */
+        }
+
+        .content-list table, .content-list th, .content-list td {
+            border: 1px solid #fff;
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        .content-list th, .content-list td {
+            background-color: #5a4667;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .content-list th {
+            background-color: #5a4667;
+            color: #fff;
+            border-radius: 10px;
+        }
+
+        .content-list tbody tr:hover {
+            background-color: #5a4667;
+        }
+
+        .create-content label{
+            width: 100%;
+            background-color: #3498db;
+            color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .create-content select {
+            color: #333333;
+            width: 90%;
+            background-color: #2980b9;
+            height: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .create-content input {
+            color: #333333;
+            width: 90%;
+            background-color: #2980b9;
+            height: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* The Modal (background) */
+        .create-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content/Box */
+        .create-content {
+            background-color: #C0D6E4;
+            margin: 5% auto; /* 5% from the top and centered */
+            padding: 20px;
+            border: 15px solid #6c3483;
+            border-radius: 10px;
+            width: 70%; /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+            color: #6c3483;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #6c3483;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .option-list table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            border-radius: 100px; /* Rounded table corners */
+        }
+
+        .option-list table, .quiz-list th, .quiz-list td {
+            border: 1px solid #fff;
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        .option-list th, .quiz-list td {
+            background-color: #5a4667;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .option-list th {
+            background-color: #5a4667;
+            color: #fff;
+            border-radius: 10px;
+        }
+
+        .option-list tbody tr:hover {
+            background-color: #5a4667;
+        }
+
+
+        .create label{
+            width: 100%;
+            background-color: #3498db;
+            color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .create select {
+            color: #333333;
+            width: 90%;
+            background-color: #2980b9;
+            height: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .create input {
+            color: #333333;
+            width: 90%;
+            background-color: #2980b9;
+            height: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class = "container">
+    <h1 style="text-align: center">Create a Quiz</h1>
+    <div class="container">
+        <div class="content-list">
+            <h2>Quiz List</h2>
+            <table id="quizzesTable" class="table table-striped">
+                <thead>
+                <tr>
+                    <th data-field="category" data-valign="middle" data-align="center" data-formatter="categoryFormatter">Category</th>
+                    <th data-field="difficulty" data-valign="middle" data-align="center" data-formatter="difficultyFormatter">Difficulty</th>
+                    <th data-field="timeLimit" data-valign="middle" data-align="center" data-formatter="timeLimitFormatter">Time</th>
+                    <th data-field="seeResult" data-valign="middle" data-align="center" data-formatter="seeResultFormatter">See Result</th>
+                    <th data-field="passingScore" data-valign="middle" data-align="center" data-formatter="passingScoreFormatter">Score</th>
+                    <th data-formatter="buttonsFormatter" data-valign="middle" data-align="center">Action</th>
+                    <th data-field="remove-option" data-valign="middle" data-align="center">X</th>
+                </tr>
+                </thead>
+                <tbody id = "quizTableBody">
+
+                </tbody>
+            </table>
+        </div>
+        <button class="btn" id="createQuizBtn">Create quiz</button>
+        <br> <br>
+        <div class="content-list">
+            <h2>Question List</h2>
+            <table class = "table table-stripped" id="questionTable">
+                <thead>
+                <tr>
+                    <th data-field="question" data-valign="middle" data-align="center">Question</th>
+                    <th data-field="hint" data-valign="middle" data-align="center" data-formatter="hintFormatter">Hint</th>
+                    <th data-field="options" data-valign="middle" data-align="center" data-formatter="optionsFormatter">Options</th>
+                    <th data-field="multipleChoice" data-valign="middle" data-align="center" data-formatter="multipleChoiceFormatter">Multiple Choice</th>
+                    <th data-field="remove-option" data-valign="middle" data-align="center">X</th>
+                </tr>
+                </thead>
+                <tbody id = "questionTableBody">
+
+                </tbody>
+            </table>
+        </div>
+        <button class="btn" id="createQuestionBtn">Create question</button>
+    </div>
+
+    <div id="createQuizModal" class="create-modal">
+        <div class="create-content">
+            <span class="close" id="closeQuiz">&times;</span>
+            <h4>Quiz Details</h4>
+            <div class="container">
+                <table style="position: relative; margin: auto">
+                    <tr class="quiz-create-list">
+                        <td><label for="quizCategory">Category </label></td>
+                        <td> <select class="quiz-create-select" name="quiz-category" id="quizCategory">
+                            <option value="GENERAL_KNOWLEDGE">General Knowledge</option>
+                            <option value="SCIENCE_AND_NATURE">Science & Nature</option>
+                            <option value="HISTORY">History</option>
+                            <option value="FOOD_AND_COOKING">Food & Cooking</option>
+                            <option value="ART_AND_ARTISTS">Art & Artists</option>
+                            <option value="FAMOUS_PERSONALITIES">Famous Personalities</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="quizDifficulty">Difficulty </label>
+                        </td>
+                        <td>
+                            <select class="quiz-create-select" name="quiz-difficulty" id="quizDifficulty">
+                                <option value="EASY">Easy</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="HARD">Hard</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="quizTimeLimit">Time Limit </label>
+                        </td>
+                        <td>
+                            <input type="number" class="quiz-create-number" id="quizTimeLimit" name="quiz-time-limit" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>See Rezult </label>
+                        </td>
+                        <td>
+                            <label style="width: 44%; height: 70%; background-color: #2980b9">
+                                <input type="radio" class="quiz-create-checkbox" id="quizSeeResultTrue"/>
+                                <span>True</span>
+                            </label>
+                            <label style="width: 44%; height: 70%; background-color: #2980b9">
+                                <input type="radio" class="quiz-create-checkbox" id="quizSeeResultFalse"/>
+                                <span>False</span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="quizDescription">Description </label>
+                        </td>
+                        <td>
+                            <input type="text" class="quiz-create-text" id="quizDescription" name="quiz-description" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="quizMinimumScore">Passing Score </label>
+                        </td>
+                        <td>
+                            <input type="number" class="quiz-create-number" id="quizMinimumScore" name="quiz-minimum-score"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <button class="btn" id="saveQuizBtn" style="margin-top: 2%">Save Quiz</button>
+        </div>
+    </div>
+
+    <div id="createQuestionModal" class="create-modal">
+        <!-- Modal content -->
+        <div class="create-content">
+            <span class="close" id="closeQuestion">&times;</span>
+            <h4>Create a question</h4>
+            <div class="container">
+                <div class="row">
+                    <!-- atribute intrebare -->
+                    <div class="col">
+                        <div class="question-create">
+                            <table id="questionDetailTbl" style="margin: auto">
+                                <tr>
+                                    <td>
+                                        <label for="questionCreateDescription">Desctiption</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="quiz-create-text" id="questionCreateDescription"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="questionCreateHint">Hint</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="question-create-text" id="questionCreateHint"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>Multiple Choice</label>
+                                    </td>
+                                    <td>
+                                        <label style="width: 44%; height: 70%; background-color: #2980b9">
+                                            <input type="radio" class="quiz-create-checkbox" id="questionIsMultipleChoiceTrue"/>
+                                            <span>True</span>
+                                        </label>
+                                        <label style="width: 44%; height: 70%; background-color: #2980b9">
+                                            <input type="radio" class="quiz-create-checkbox" id="questionIsMultipleChoiceFalse"/>
+                                            <span>False</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="questionCreateOption">Option</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="question-create-text" id="questionCreateOption">
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <button class="btn" id="addOptionBtn">Add Option</button>
+                        </div>
+                    </div>
+
+                    <!-- lista optiuni raspuns -->
+                    <div class="col">
+                        <div class="option-list">
+                            <table class = "table table-stripped" id="optionTable">
+                                <thead>
+                                <tr>
+                                    <th data-field="option" data-valign="middle" data-align="center">Option</th>
+                                    <th data-field="remove-option" data-valign="middle" data-align="center">X</th>
+                                </tr>
+                                </thead>
+                                <tbody id="optionTableBody">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn" id="saveQuestionBtn" style="margin-top: 2%">Save Question</button>
+        </div>
+    </div>
+
+    <br>
+    <button class="btn" id="addQuestionBtn">Add Question to Quiz</button>
+
+</div>
+<!--
+refacut dupa ce rezolvam JWT
+<script src="../static/js/create/createQuiz.js"></script>
+<script src="../static/js/create/createQuestion.js"></script>
+<script src="../static/js/create/addQuestionToQuiz.js"></script>
+-->
+
+<script>
+    function getCookie(cookieName) {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Check if this cookie starts with the specified name
+            if (cookie.indexOf(cookieName + '=') === 0) {
+                // Extract and return the cookie value
+                return cookie.substring(cookieName.length + 1); // Add 1 to skip the '=' character
+            }
+        }
+        // Return null if the cookie is not found
+        return null;
+    }
+
+    //iau jws din cookie
+    let bearerToken = getCookie("token")
+
+
+    var quizTableSelect = document.getElementById("quizTableBody");
+    var selectedQuizId = 0
+
+    quizTableSelect.addEventListener("click", function (event) {
+        var target = event.target; // The clicked element (cell)
+
+        if (target.tagName === "TD") {
+            var row = target.closest("tr");
+            row.style.backgroundColor = "lightblue";
+        }
+
+        selectedQuizId = row.rowIndex
+
+        console.log(selectedQuizId)
+
+    });
+
+    var questionTableSelect = document.getElementById("questionTableBody");
+    var selectedQuestionId = 0
+
+    questionTableSelect.addEventListener("click", function (event) {
+        var target = event.target; // The clicked element (cell)
+
+        if (target.tagName === "TD") {
+            var row = target.closest("tr");
+            row.style.backgroundColor = "lightblue";
+        }
+
+        selectedQuestionId = row.rowIndex
+
+        console.log(selectedQuestionId)
+    });
+
+    var addQuestionToQuiz = document.getElementById("addQuestionBtn")
+
+    addQuestionToQuiz.onclick = function (){
+        //POST AJAX  /add/question
+    }
+    //show createQuestionModal
+    let addQuestionBtn = window.document.getElementById("createQuestionBtn")
+    let questionCreate = window.document.getElementById("createQuestionModal")
+    let spanQuestion = document.getElementById("closeQuestion");
+    addQuestionBtn.onclick = function() {
+        questionCreate.style.display = "block";
+    }
+    // When the user clicks on <span> (x), close the modal
+    spanQuestion.onclick = function() {
+        questionCreate.style.display = "none";
+    }
+
+    //true false pentru multipleChoice
+    let questionIsMultipleChoiceTrue = window.document.getElementById("questionIsMultipleChoiceTrue")
+    let questionIsMultipleChoiceFalse = window.document.getElementById("questionIsMultipleChoiceFalse")
+
+    questionIsMultipleChoiceFalse.onclick = function() {
+        if (questionIsMultipleChoiceTrue.checked){
+            questionIsMultipleChoiceTrue.checked = false
+        }
+        questionIsMultipleChoiceFalse.checked = true
+    }
+    questionIsMultipleChoiceTrue.onclick = function() {
+        if (questionIsMultipleChoiceFalse.checked){
+            questionIsMultipleChoiceFalse.checked = false
+        }
+        questionIsMultipleChoiceTrue.checked = true
+    }
+
+
+    //adaugare option table
+    let addOptionBtn = document.getElementById("addOptionBtn");
+    addOptionBtn.onclick = function () {
+        var option = document.getElementById('questionCreateOption');
+        var itemText = option.value;
+        if (itemText.trim() !== '') {
+            // Create a new row and two cells
+            var table = document.getElementById('optionTableBody');
+            var newRow = table.insertRow(0); // Insert at the beginning
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+
+            // Set the cell values
+            cell1.innerHTML = itemText;
+            cell2.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
+
+            // Clear the input field
+            option.value = '';
+        } else {
+            alert('Please enter an item.');
+        }
+    }
+    function deleteRow(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+
+    // adaugare question table
+    let questionTable = window.document.getElementById("questionTable")
+    let saveQuestionBtn = window.document.getElementById("saveQuestionBtn")
+    saveQuestionBtn.onclick = function () {
+        let optionElements = window.document.getElementById("optionTable").querySelectorAll("tr td:nth-child(1)")
+        let description = window.document.getElementById("questionCreateDescription")
+        let hint = window.document.getElementById("questionCreateHint")
+        let multipleChoice = window.document.getElementById("questionIsMultipleChoiceTrue")
+        let options = []
+        optionElements.forEach(function (cell){
+            options.push(cell.textContent)
+        })
+
+        let question = {
+            description: description.value,
+            hint: hint.value,
+            multipleChoice: multipleChoice.checked,
+            options: options
+        }
+
+        //POST AJAX /create/question aici
+
+        //pentru test completeaza tabelul in loc de POST AJAX
+        let body = document.getElementById("questionTableBody")
+        let row = body.insertRow(body.rows.length)
+        var cell1 = row.insertCell(0)
+        var cell2 = row.insertCell(1)
+        var cell3 = row.insertCell(2)
+        var cell4 = row.insertCell(3)
+        var cell5 = row.insertCell(4)
+        cell1.innerHTML = question.description
+        cell2.innerHTML = question.hint
+        cell3.innerHTML = question.options.toString()
+        cell4.innerHTML = question.multipleChoice
+        cell5.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
+
+
+        //eliberare inputuri de completat
+        description.value = ''
+        hint.value = ''
+        multipleChoice.value = ''
+        let rows = document.getElementById("optionTableBody").querySelectorAll("tr")
+        rows.forEach(function (row){
+            row.parentNode.removeChild(row)
+        })
+
+        //inchidem questionModal
+        questionCreate.style.display = "none"
+    }
+
+    // true false pentru seeResult
+    let quizSeeResultTrue = window.document.getElementById("quizSeeResultTrue")
+    let quizSeeResultFalse = window.document.getElementById("quizSeeResultFalse")
+
+    quizSeeResultFalse.onclick = function() {
+        if (quizSeeResultTrue.checked){
+            quizSeeResultTrue.checked = false
+        }
+        quizSeeResultFalse.checked = true
+    }
+    quizSeeResultTrue.onclick = function() {
+        if (quizSeeResultFalse.checked){
+            quizSeeResultFalse.checked = false
+        }
+        quizSeeResultTrue.checked = true
+    }
+
+
+    //show createQuiz Modal
+    let addQuizBtn = window.document.getElementById("createQuizBtn")
+    let quizCreate = window.document.getElementById("createQuizModal")
+    let spanQuiz = document.getElementById("closeQuiz");
+    addQuizBtn.onclick = function() {
+        quizCreate.style.display = "block";
+    }
+    // When the user clicks on <span> (x), close the modal
+    spanQuiz.onclick = function() {
+        quizCreate.style.display = "none";
+    }
+
+
+    // adaugare quiz table
+    let saveQuizBtn = document.getElementById("saveQuizBtn")
+    saveQuizBtn.addEventListener("click",  function (){
+
+        let body = document.getElementById("quizTableBody")
+        let category = document.getElementById("quizCategory")
+        let difficulty = document.getElementById("quizDifficulty")
+        let timeLimit = document.getElementById("quizTimeLimit")
+        let seeResult = document.getElementById("quizSeeResultTrue")
+        let description = document.getElementById("quizDescription")
+        let minimumScore = document.getElementById("quizMinimumScore")
+        let minimumRequired = false
+        if (minimumScore.value){
+            minimumRequired = true
+        }
+
+        let quiz = {
+            id: body.rows.length,
+            username_owner: "raul",
+            category: category.value,
+            difficulty: difficulty.value,
+            timeLimit: timeLimit.value,
+            description: description.value,
+            canSeeResult: seeResult.checked,
+            passingScore: minimumScore.value,
+            minimumScoreRequired: minimumRequired
+
+        }
+        console.log(quiz)
+
+        //AJAX POST /create/quiz aici
+        $.ajax({
+            url:'/login/create/quiz',
+            type: 'POST',
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            contentType: 'application/json',
+            data: JSON.stringify(quiz),
+            cache: false,
+            success: function (xhr, status, error){
+                alert("Added");
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred. Status: " + xhr.status);
+            }
+        });
+
+        //doar de test completez tabelul, in loc de AJAX POST
+        let row = body.insertRow(body.rows.length)
+        var cell1 = row.insertCell(0)
+        var cell2 = row.insertCell(1)
+        var cell3 = row.insertCell(2)
+        var cell4 = row.insertCell(3)
+        var cell5 = row.insertCell(4)
+        var cell6 = row.insertCell(5)
+        var cell7 = row.insertCell(6)
+        cell1.innerHTML = quiz.category
+        cell2.innerHTML = quiz.difficulty
+        cell3.innerHTML = quiz.timeLimit
+        cell4.innerHTML = quiz.canSeeResult
+        cell5.innerHTML = quiz.description
+        cell6.innerHTML = quiz.passingScore
+        cell7.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>'
+
+        timeLimit.value = ""
+        seeResult.checked = false
+        document.getElementById("quizSeeResultFalse").checked = false
+        description.innerText = ""
+        minimumScore.value = ""
+
+        quizCreate.style.display = "none"
+
+    });
+</script>
+</body>
+</html>

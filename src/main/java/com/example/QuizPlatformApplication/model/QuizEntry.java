@@ -21,6 +21,8 @@ public class QuizEntry implements Serializable {
     @JsonBackReference
     private Quiz quiz;
 
+    //private Long quizId;
+
     @Column
     private String question;
 
@@ -34,7 +36,15 @@ public class QuizEntry implements Serializable {
     @Column
     private String hint;
 
-    public QuizEntry() {
+    public QuizEntry(Quiz quiz, String question, List<QuizOptions> optionAndExplanation, boolean isMultipleChoice, String hint) {
+        this.quiz = quiz;
+        this.question = question;
+        this.optionAndExplanation = optionAndExplanation;
+        this.isMultipleChoice = isMultipleChoice;
+        this.hint = hint;
     }
 
+    public QuizEntry() {
+
+    }
 }

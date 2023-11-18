@@ -430,6 +430,7 @@
 
     <br>
     <button class="btn" id="addQuestionBtn">Add Question to Quiz</button>
+    <button class="btn" id="doneBtn">Done</button>
 
 </div>
 <!--
@@ -457,6 +458,99 @@ refacut dupa ce rezolvam JWT
     //iau jws din cookie
     let bearerToken = getCookie("token")
 
+    let doneBtn = document.getElementById("doneBtn")
+    doneBtn.onclick = function (){
+        window.location.href = "/login/mainPage"
+    }
+
+    //show createQuiz Modal
+    let quizzes = []
+    let addQuizBtn = window.document.getElementById("createQuizBtn")
+    let quizCreate = window.document.getElementById("createQuizModal")
+    let spanQuiz = document.getElementById("closeQuiz");
+    addQuizBtn.onclick = function() {
+        quizCreate.style.display = "block";
+    }
+    // When the user clicks on <span> (x), close the modal
+    spanQuiz.onclick = function() {
+        quizCreate.style.display = "none";
+    }
+
+
+    // adaugare quiz table
+    let saveQuizBtn = document.getElementById("saveQuizBtn")
+    saveQuizBtn.addEventListener("click",  function (){
+
+        let body = document.getElementById("quizTableBody")
+        let category = document.getElementById("quizCategory")
+        let difficulty = document.getElementById("quizDifficulty")
+        let timeLimit = document.getElementById("quizTimeLimit")
+        let seeResult = document.getElementById("quizSeeResultTrue")
+        let description = document.getElementById("quizDescription")
+        let minimumScore = document.getElementById("quizMinimumScore")
+        let minimumRequired = false
+        if (minimumScore.value){
+            minimumRequired = true
+        }
+
+        let quiz = {
+            id: body.rows.length,
+            username_owner: "raul",
+            category: category.value,
+            difficulty: difficulty.value,
+            timeLimit: timeLimit.value,
+            description: description.value,
+            canSeeResult: seeResult.checked,
+            passingScore: minimumScore.value,
+            minimumScoreRequired: minimumRequired
+        }
+
+        quizzes.push(quiz)
+
+        //AJAX POST /create/quiz aici
+        $.ajax({
+            url:'/login/create/quiz',
+            type: 'POST',
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            contentType: 'application/json',
+            data: JSON.stringify(quiz),
+            cache: false,
+            success: function (xhr, status, error){
+                console.log("Added");
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred. Status: " + xhr.status);
+            }
+        });
+
+        //doar de test completez tabelul, in loc de AJAX POST
+        let row = body.insertRow(body.rows.length)
+        var cell1 = row.insertCell(0)
+        var cell2 = row.insertCell(1)
+        var cell3 = row.insertCell(2)
+        var cell4 = row.insertCell(3)
+        var cell5 = row.insertCell(4)
+        var cell6 = row.insertCell(5)
+        var cell7 = row.insertCell(6)
+        cell1.innerHTML = quiz.category
+        cell2.innerHTML = quiz.difficulty
+        cell3.innerHTML = quiz.timeLimit
+        cell4.innerHTML = quiz.canSeeResult
+        cell5.innerHTML = quiz.description
+        cell6.innerHTML = quiz.passingScore
+        cell7.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>'
+
+        timeLimit.value = ""
+        seeResult.checked = false
+        document.getElementById("quizSeeResultFalse").checked = false
+        description.innerText = ""
+        minimumScore.value = ""
+
+        quizCreate.style.display = "none"
+
+    });
 
     var quizTableSelect = document.getElementById("quizTableBody");
     var selectedQuizId = 0
@@ -494,7 +588,29 @@ refacut dupa ce rezolvam JWT
     var addQuestionToQuiz = document.getElementById("addQuestionBtn")
 
     addQuestionToQuiz.onclick = function (){
-        //POST AJAX  /add/question
+        /*
+        * //POST AJAX  /add/question
+        let requestData = {
+            quizId: selectedQuizId,
+            questionId: selectedQuestionId
+        }
+        $.ajax({
+            url:'/login/add/question',
+            type: 'POST',
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            contentType: 'application/json',
+            data: JSON.stringify(quiz),
+            cache: false,
+            success: function (xhr, status, error){
+                console.log("Added");
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred. Status: " + xhr.status);
+            }
+        });
+        * */
     }
     //show createQuestionModal
     let addQuestionBtn = window.document.getElementById("createQuestionBtn")
@@ -567,14 +683,46 @@ refacut dupa ce rezolvam JWT
             options.push(cell.textContent)
         })
 
-        let question = {
-            description: description.value,
+        let quizEntry = {
+            quiz: selectedQuestionId,
+            question: description.value,
+            optionAndExplanation: options, //Dupa ce se rezolva optiunile = [],
+            isMultipleChoice: multipleChoice.checked,
             hint: hint.value,
-            multipleChoice: multipleChoice.checked,
-            options: options
         }
+        //aici trebuie un ajax call pentru a salva optiunile => create/addOptions in baza de date
+        let quizOptions = []
+        options.forEach(function(item){
+            let opt = {
+                quiz: quizEntry,
+                option: item,
+                explanation: "",
+                isCorrectOption: false
 
+            }
+            quizOptions.push(opt)
+        })
+        //quizEntry.optionAndExplanation = quizOptions  dupa ce se rezolva optiunile
+
+        /*
         //POST AJAX /create/question aici
+        $.ajax({
+            url:'/login/create/question',
+            type: 'POST',
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            contentType: 'application/json',
+            data: JSON.stringify(quizEntry),
+            cache: false,
+            success: function (xhr, status, error){
+                alert("Added");
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred. Status: " + xhr.status);
+            }
+        });
+        */
 
         //pentru test completeaza tabelul in loc de POST AJAX
         let body = document.getElementById("questionTableBody")
@@ -584,10 +732,10 @@ refacut dupa ce rezolvam JWT
         var cell3 = row.insertCell(2)
         var cell4 = row.insertCell(3)
         var cell5 = row.insertCell(4)
-        cell1.innerHTML = question.description
-        cell2.innerHTML = question.hint
-        cell3.innerHTML = question.options.toString()
-        cell4.innerHTML = question.multipleChoice
+        cell1.innerHTML = selectedQuizId.description
+        cell2.innerHTML = selectedQuizId.hint
+        cell3.innerHTML = selectedQuizId.options
+        cell4.innerHTML = selectedQuizId.multipleChoice
         cell5.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
 
 
@@ -622,93 +770,7 @@ refacut dupa ce rezolvam JWT
     }
 
 
-    //show createQuiz Modal
-    let addQuizBtn = window.document.getElementById("createQuizBtn")
-    let quizCreate = window.document.getElementById("createQuizModal")
-    let spanQuiz = document.getElementById("closeQuiz");
-    addQuizBtn.onclick = function() {
-        quizCreate.style.display = "block";
-    }
-    // When the user clicks on <span> (x), close the modal
-    spanQuiz.onclick = function() {
-        quizCreate.style.display = "none";
-    }
 
-
-    // adaugare quiz table
-    let saveQuizBtn = document.getElementById("saveQuizBtn")
-    saveQuizBtn.addEventListener("click",  function (){
-
-        let body = document.getElementById("quizTableBody")
-        let category = document.getElementById("quizCategory")
-        let difficulty = document.getElementById("quizDifficulty")
-        let timeLimit = document.getElementById("quizTimeLimit")
-        let seeResult = document.getElementById("quizSeeResultTrue")
-        let description = document.getElementById("quizDescription")
-        let minimumScore = document.getElementById("quizMinimumScore")
-        let minimumRequired = false
-        if (minimumScore.value){
-            minimumRequired = true
-        }
-
-        let quiz = {
-            id: body.rows.length,
-            username_owner: "raul",
-            category: category.value,
-            difficulty: difficulty.value,
-            timeLimit: timeLimit.value,
-            description: description.value,
-            canSeeResult: seeResult.checked,
-            passingScore: minimumScore.value,
-            minimumScoreRequired: minimumRequired
-
-        }
-        console.log(quiz)
-
-        //AJAX POST /create/quiz aici
-        $.ajax({
-            url:'/login/create/quiz',
-            type: 'POST',
-            headers: {
-                Authorization: `Bearer ${bearerToken}`
-            },
-            contentType: 'application/json',
-            data: JSON.stringify(quiz),
-            cache: false,
-            success: function (xhr, status, error){
-                alert("Added");
-            },
-            error: function (xhr, status, error) {
-                alert("An error occurred. Status: " + xhr.status);
-            }
-        });
-
-        //doar de test completez tabelul, in loc de AJAX POST
-        let row = body.insertRow(body.rows.length)
-        var cell1 = row.insertCell(0)
-        var cell2 = row.insertCell(1)
-        var cell3 = row.insertCell(2)
-        var cell4 = row.insertCell(3)
-        var cell5 = row.insertCell(4)
-        var cell6 = row.insertCell(5)
-        var cell7 = row.insertCell(6)
-        cell1.innerHTML = quiz.category
-        cell2.innerHTML = quiz.difficulty
-        cell3.innerHTML = quiz.timeLimit
-        cell4.innerHTML = quiz.canSeeResult
-        cell5.innerHTML = quiz.description
-        cell6.innerHTML = quiz.passingScore
-        cell7.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>'
-
-        timeLimit.value = ""
-        seeResult.checked = false
-        document.getElementById("quizSeeResultFalse").checked = false
-        description.innerText = ""
-        minimumScore.value = ""
-
-        quizCreate.style.display = "none"
-
-    });
 </script>
 </body>
 </html>

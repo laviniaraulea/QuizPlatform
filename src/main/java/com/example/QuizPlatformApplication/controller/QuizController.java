@@ -38,7 +38,6 @@ public class QuizController {
 
     @PostMapping("/create/quiz")
     public @ResponseBody ResponseEntity<?> createQuiz(@RequestBody QuizDTO quizDTO) {
-        System.out.println("intra");
         try {
             Quiz quiz = new Quiz(userService.getUserByUsername(quizDTO.getUsername_owner()), quizDTO.getCategory(), quizDTO.getDifficulty(),quizDTO.getTimeLimit(),quizDTO.getDescription(),quizDTO.isCanSeeResult(),quizDTO.getPassingScore(),quizDTO.isMinimumScoreRequired());
             quizService.createQuiz(quiz);
@@ -50,8 +49,11 @@ public class QuizController {
 
     @PostMapping("/create/question")
     public @ResponseBody ResponseEntity<?> createQuestion(@RequestBody QuizEntry quizEntry) {
+        System.out.println("intra");
         try {
+            System.out.println("intra2");
             quizService.createQuestion(quizEntry);
+            System.out.println(quizEntry.getQuestion());
             return ResponseEntity.ok(quizEntry);
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

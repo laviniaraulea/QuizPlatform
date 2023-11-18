@@ -247,7 +247,7 @@
     createQuizBtnRef.click(function () {
         // TODO: Aici e task-ul de "Create Quiz"
         let bearerToken = /*[[${token}]]*/ 'default'; // De asta am nevoie, altfel nu am autorizatie sa fac API request-uri
-        alert(bearerToken)
+
         // console.log(bearerToken)
         $.ajax({
             url: '/login/createQuiz',

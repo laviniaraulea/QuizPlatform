@@ -37,4 +37,11 @@ public class QuizEntry implements Serializable {
     public QuizEntry() {
     }
 
+    public QuizEntry(Quiz quiz, String question, List<QuizOptions> optionAndExplanation, boolean isMultipleChoice, String hint) {
+        this.quiz = quiz;
+        this.question = question;
+        this.optionAndExplanation = optionAndExplanation;
+        this.isMultipleChoice = isMultipleChoice;
+        this.hint = hint;
+    }
 }

@@ -60,6 +60,7 @@ public class QuizServiceImpl implements QuizServiceInterface {
         }
         quiz.getQuizEntries().add(quizEntry);
         quizRepoInterface.save(quiz);
+        quizEntryRepoInterface.save(quizEntry);
     }
 
     @Override

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="QuizPlatform@localhost" uuid="7047672f-992b-45c3-9f58-15f7cc23e1d8">
+    <data-source source="LOCAL" name="QuizPlatform@localhost" uuid="ad43a73a-a2ba-4cf4-a020-8e99a02e5510">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

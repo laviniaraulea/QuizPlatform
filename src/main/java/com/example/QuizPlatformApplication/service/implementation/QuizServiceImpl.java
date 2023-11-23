@@ -45,6 +45,10 @@ public class QuizServiceImpl implements QuizServiceInterface {
             throw new ServiceException("Invalid question. Make sure all the required information is provided.");
         }
         quizEntryRepoInterface.save(quizEntry);
+        for(QuizOptions quizOptions: quizEntry.getOptionAndExplanation()){
+            quizOptions.setQuizEntry(quizEntry);
+            quizOptionRepoInterface.save(quizOptions);
+        }
     }
 
     @Override
@@ -59,6 +63,7 @@ public class QuizServiceImpl implements QuizServiceInterface {
             throw new ServiceException("The question already exists in the quiz.");
         }
         quiz.getQuizEntries().add(quizEntry);
+        quizEntry.setQuiz(quiz);
         quizRepoInterface.save(quiz);
         quizEntryRepoInterface.save(quizEntry);
     }

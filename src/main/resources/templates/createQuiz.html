@@ -302,6 +302,7 @@
                             </td>
                         </tr>
                     </table>
+                    <button class="btn" id="saveQuizBtn" style="margin-top: 2%">Save Quiz</button>
             </div>
             <div class="col">
                 <div class="content-list">
@@ -485,7 +486,9 @@ refacut dupa ce rezolvam JWT
     }
 
     let quizId = 1;
-    function save_quiz (){
+
+    let saveQuizBtn = document.getElementById("saveQuizBtn")
+    saveQuizBtn.addEventListener("click",  function (){
 
         let category = document.getElementById("quizCategory")
         let difficulty = document.getElementById("quizDifficulty")
@@ -527,7 +530,7 @@ refacut dupa ce rezolvam JWT
             }
         });
 
-    };
+    });
 
     let quizOptions = []
 
@@ -721,7 +724,6 @@ refacut dupa ce rezolvam JWT
 
     var addQuestionToQuiz = document.getElementById("addQuestionBtn")
     addQuestionToQuiz.onclick = function (){
-        save_quiz()
         for (var index in questionIds){
             console.log(questionIds[index]);
             //POST AJAX  /add/question

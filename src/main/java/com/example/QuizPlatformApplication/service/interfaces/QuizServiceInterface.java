@@ -30,4 +30,5 @@ public interface QuizServiceInterface {
     void startQuiz(Quiz quiz, User user) throws ServiceException;
 
     void endQuiz(Quiz quiz, User user, List<AnswerDTO> userAnswers) throws ServiceException;
+
 }

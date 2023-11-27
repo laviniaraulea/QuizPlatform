@@ -36,6 +36,7 @@ public class QuizController {
         return ResponseEntity.ok(quizzes);
     }
 
+
     @PostMapping("/create/quiz")
     public @ResponseBody ResponseEntity<?> createQuiz(@RequestBody QuizDTO quizDTO) {
         try {

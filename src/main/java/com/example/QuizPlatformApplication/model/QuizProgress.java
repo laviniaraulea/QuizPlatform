@@ -29,6 +29,9 @@ public class QuizProgress implements Serializable {
     @Column
     private LocalDateTime endTime;
 
+    @Column
+    private Float score;
+
     public QuizProgress() {
     }
 }

@@ -150,6 +150,7 @@ public class QuizServiceImpl implements QuizServiceInterface {
         quizProgress.setUser(user);
         quizProgress.setHasEnded(false);
         quizProgress.setStartTime(LocalDateTime.now());
+        quizProgress.setScore(0F);
         quizProgressRepoInterface.save(quizProgress);
     }
 
@@ -164,9 +165,7 @@ public class QuizServiceImpl implements QuizServiceInterface {
         }
 
         QuizProgress quizProgress = getLastQuizProgress(quiz, user);
-        quizProgress.setHasEnded(true);
-        quizProgress.setEndTime(LocalDateTime.now());
-        quizProgressRepoInterface.save(quizProgress);
+        LocalDateTime endTime = LocalDateTime.now();
 
         try {
             for(AnswerDTO answerDTO : userAnswers) {
@@ -193,5 +192,10 @@ public class QuizServiceImpl implements QuizServiceInterface {
         } catch (NumberFormatException e) {
             throw new ServiceException("Invalid answer.");
         }
+
+        quizProgress.setHasEnded(true);
+        quizProgress.setEndTime(endTime);
+        quizProgress.setScore(5.0F); // TODO: calculate score
+        quizProgressRepoInterface.save(quizProgress);
     }
 }

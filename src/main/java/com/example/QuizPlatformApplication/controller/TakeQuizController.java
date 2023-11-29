@@ -1,10 +1,8 @@
 package com.example.QuizPlatformApplication.controller;
 
-import com.example.QuizPlatformApplication.controller.dto.AnswerDTO;
-import com.example.QuizPlatformApplication.controller.dto.CorrectAnswersDTO;
-import com.example.QuizPlatformApplication.controller.dto.DTOUtils;
-import com.example.QuizPlatformApplication.controller.dto.QuestionInfoDTO;
+import com.example.QuizPlatformApplication.controller.dto.*;
 import com.example.QuizPlatformApplication.model.*;
+import com.example.QuizPlatformApplication.security.jwttoken.JwtService;
 import com.example.QuizPlatformApplication.service.ServiceException;
 import com.example.QuizPlatformApplication.service.interfaces.QuizServiceInterface;
 import com.example.QuizPlatformApplication.service.interfaces.UserServiceInterface;
@@ -36,6 +34,8 @@ public class TakeQuizController {
             return ResponseEntity.ok(quiz.getQuizEntries().size());
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Quiz Id format");
         }
     }
 
@@ -117,13 +117,17 @@ public class TakeQuizController {
     }
 
     @PostMapping("/quiz/{quizId}/end")
-    public @ResponseBody ResponseEntity<?> endQuiz(@PathVariable String quizId, @RequestBody String username, @RequestBody List<AnswerDTO> userAnswers) {
+    public @ResponseBody ResponseEntity<?> endQuiz(@PathVariable String quizId, @RequestBody EndQuizRequest request) {
         // TODO: in the future we will verify the identity of the user by using JWT
         try {
+            String username = request.getUsername();
+            List<AnswerDTO> userAnswers = request.getUserAnswers();
+
             Long quizIdLong = Long.parseLong(quizId);
             Quiz quiz = quizService.getQuizById(quizIdLong);
 
             User user = userService.getUserByUsername(username);
+
             if(user == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
             }
@@ -156,7 +160,8 @@ public class TakeQuizController {
             }
 
             QuizProgress quizProgress = quizService.getLastQuizProgress(quiz, user);
-            return ResponseEntity.ok(quizProgress);
+            QuizProgressDTO quizProgressDTO = DTOUtils.getFromDTO(quizProgress);
+            return ResponseEntity.ok(quizProgressDTO);
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -172,6 +177,14 @@ public class TakeQuizController {
             User user = userService.getUserByUsername(username);
             if(user == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            }
+
+            QuizProgress quizProgress = quizService.getLastQuizProgress(quiz, user);
+            if(quizProgress == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quiz not started");
+            }
+            if(!quizProgress.getHasEnded()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quiz in progress");
             }
 
             List<CorrectAnswersDTO> correctAnswers = new ArrayList<>();

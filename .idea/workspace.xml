@@ -89,6 +89,7 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< Updated upstream
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RequestMappingsPanelOrder0": "0",
@@ -110,12 +111,31 @@
     "settings.editor.selected.configurable": "vcs.Git",
     "spring.configuration.checksum": "417560b3471e8b28756066ea0db6505f",
     "vue.rearranger.settings.migration": "true"
+=======
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/FACULTATE/Anul 2/Semestrul 2/Medii de Proiectare si Programare&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;417560b3471e8b28756066ea0db6505f&quot;
+>>>>>>> Stashed changes
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
+<<<<<<< Updated upstream
 }]]></component>
   <component name="RunDashboard">
     <option name="configurationTypes">
@@ -160,6 +180,10 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+=======
+}</component>
+  <component name="RunManager" selected="Spring Boot.QuizPlatformApplication (1)">
+>>>>>>> Stashed changes
     <configuration name="QuizPlatformApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <module name="com.example.QuizPlatformApplication.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.QuizPlatformApplication.QuizPlatformApplication" />

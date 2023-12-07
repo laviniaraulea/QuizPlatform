@@ -23,8 +23,8 @@ public interface QuizServiceInterface {
 
     List<Quiz> getAllQuizzes();
 
-    List<Quiz> getQuizzesByCategory(List<String> category);
-    List<Quiz> getQuizzesByDifficulty(List<String> difficulty);
+    List<Quiz> getQuizzesByCategory(String category);
+    List<Quiz> getQuizzesByDifficulty(String difficulty);
 
     boolean isQuizStarted(Quiz quiz, User user);
 

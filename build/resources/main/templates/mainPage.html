@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
     <!-- Include Bootstrap JS (Popper.js and Bootstrap) -->
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css">
@@ -126,36 +127,69 @@
 
     <div class="quiz-list">
         <h2>Available Quizzes</h2>
+        <div class="filters-container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="difficultyDdl">Difficulty:</label>
+                        <select class="form-control" id="difficultyDdl">
+                            <option value="EAZY">Easy</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="HARD">Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="categoryDdl">Category:</label>
+                        <select class="form-control" id="categoryDdl">
+                            <option value="GENERAL_KNOWLEDGE">General knowledge</option>
+                            <option value="SCIENCE_AND_NATURE">Science & Nature</option>
+                            <option value="HISTORY">History</option>
+                            <option value="FOOD_AND_COOKING">Food & Cooking</option>
+                            <option value="ART_AND_ARTISTS">Art & Artists</option>
+                            <option value="FAMOUS_PERSONALITIES">Famous personalities</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
         <table id="quizzesTable" class="table table-striped">
             <thead>
-                <tr>
-                    <th data-field="passingScore" data-valign="middle" data-align="center" data-formatter="passingScoreFormatter">Passing Score</th>
-                    <th data-field="timeLimit" data-valign="middle" data-align="center" data-formatter="timeLimitFormatter">Time Limit</th>
-                    <th data-field="category" data-valign="middle" data-align="center" data-formatter="categoryFormatter">Category</th>
-                    <th data-field="difficulty" data-valign="middle" data-align="center" data-formatter="difficultyFormatter">Difficulty</th>
-                    <th data-formatter="buttonsFormatter" data-valign="middle" data-align="center">Action</th>
-                </tr>
+            <tr>
+                <th data-field="passingScore" data-valign="middle" data-align="center" data-formatter="passingScoreFormatter">Passing Score</th>
+                <th data-field="timeLimit" data-valign="middle" data-align="center" data-formatter="timeLimitFormatter">Time Limit</th>
+                <th data-field="category" data-valign="middle" data-align="center" data-formatter="categoryFormatter">Category</th>
+                <th data-field="difficulty" data-valign="middle" data-align="center" data-formatter="difficultyFormatter">Difficulty</th>
+                <th data-formatter="buttonsFormatter" data-valign="middle" data-align="center">Action</th>
+            </tr>
             </thead>
         </table>
     </div>
+
     <div class="create-quiz-button">
         <button id="createQuizBtn" class="btn btn-create-quiz">Create Quiz</button>
     </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
 </body>
 </html>
 
 <script th:inline="javascript">
     const quizzesTableRef = $("#quizzesTable");
+    const difficultyDdlRef = $("#difficultyDdl");
+    const categoryDdlRef = $("#categoryDdl");
     let bearerToken = /*[[${token}]]*/ 'default'; // De asta am nevoie, altfel nu am autorizatie sa fac API request-uri
     const createQuizBtnRef = $("#createQuizBtn")
 
     $(document).ready(function () {
-
         // tooltip to see the quiz details on mouse hover
         quizzesTableRef.on('mouseenter', 'button[data-toggle="tooltip"]', function () {
             const tooltipId = $(this).attr('id');
@@ -191,6 +225,68 @@
             }
         });
     });
+
+    difficultyDdlRef.on('change', function() {
+        const selectedDifficulty = $(this).val();
+        fetchQuizzesByDifficulty(selectedDifficulty);
+    });
+
+    categoryDdlRef.on('change', function() {
+        const selectedCategory = $(this).val();
+        fetchQuizzesByCategory(selectedCategory);
+    });
+
+    function fetchQuizzesByDifficulty(difficulty) {
+        const url = '/quiz/get/quizzesByDifficulty';
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            contentType: 'application/json',
+            data: {difficulty : difficulty},
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            success: function(response) {
+                // Load the new data into the table
+                quizzesTableRef.bootstrapTable('load', response);
+            },
+            error: function(error) {
+                generateFailureToast("Failed to filter quizzes!");
+            }
+        });
+    }
+
+    function fetchQuizzesByCategory(category) {
+        const url = '/quiz/get/quizzesByCategory';
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            contentType: 'application/json',
+            data: {category: category},
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            success: function(response) {
+                // Clear existing data in the table
+                quizzesTableRef.bootstrapTable('removeAll');
+
+                // Add the new data to the table
+                quizzesTableRef.bootstrapTable('append', response);
+
+                // Refresh the table to reflect the changes
+                quizzesTableRef.bootstrapTable('refresh');
+            },
+            error: function(error) {
+                generateFailureToast("Failed to filter quizzes!");
+            }
+        });
+    }
+
+    function updateTableData(url) {
+        quizzesTableRef.bootstrapTable('refresh', { url });
+    }
 
     function timeLimitFormatter(value, row, index) {
         return row.timeLimit + "min";
@@ -236,6 +332,36 @@
             return "Medium";
         else
             return "Easy";
+    }
+
+    const generateSuccessToast = (message) => {
+        Toastify({
+            text:message,
+            duration: 3000,
+            close: true,
+            gravity:"top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: "linear-gradient(to right, #00b09b, #96c93d",
+            }
+        }).showToast();
+    }
+
+    const generateFailureToast = (message) => {
+        Toastify({
+            text:message,
+            duration: 3000,
+            close: true,
+            gravity:"top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: "#ED2123A",
+                background: "-webkit-linear-gradient(to right, #93291E, #ED213A",
+                background: "linear-gradient(to right, #93291E, #ED213A",
+            }
+        }).showToast();
     }
 
     window.moderateEvents = {

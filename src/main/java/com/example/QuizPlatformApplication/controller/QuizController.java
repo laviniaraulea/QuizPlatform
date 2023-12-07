@@ -34,14 +34,14 @@ public class QuizController {
     }
 
     @GetMapping("/get/quizzesByCategory")
-    public @ResponseBody ResponseEntity<?> getQuizzesByCategory(@RequestBody List<String> category) {
+    public @ResponseBody ResponseEntity<?> getQuizzesByCategory(@RequestParam String category) {
         List<Quiz> quizzes = quizService.getQuizzesByCategory(category);
         return ResponseEntity.ok(quizzes);
     }
 
     @GetMapping("/get/quizzesByDifficulty")
-    public @ResponseBody ResponseEntity<?> quizzesByDifficulty(@RequestBody List<String> dificulty) {
-        List<Quiz> quizzes = quizService.getQuizzesByDifficulty(dificulty);
+    public @ResponseBody ResponseEntity<?> quizzesByDifficulty(@RequestParam String difficulty) {
+        List<Quiz> quizzes = quizService.getQuizzesByDifficulty(difficulty);
         return ResponseEntity.ok(quizzes);
     }
 

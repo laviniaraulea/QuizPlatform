@@ -33,6 +33,18 @@ public class QuizController {
         return ResponseEntity.ok(quizzes);
     }
 
+    @GetMapping("/get/quizzesByCategory")
+    public @ResponseBody ResponseEntity<?> getQuizzesByCategory(@RequestBody List<String> category) {
+        List<Quiz> quizzes = quizService.getQuizzesByCategory(category);
+        return ResponseEntity.ok(quizzes);
+    }
+
+    @GetMapping("/get/quizzesByDifficulty")
+    public @ResponseBody ResponseEntity<?> quizzesByDifficulty(@RequestBody List<String> dificulty) {
+        List<Quiz> quizzes = quizService.getQuizzesByDifficulty(dificulty);
+        return ResponseEntity.ok(quizzes);
+    }
+
     @PostMapping("/create/quiz")
     public @ResponseBody ResponseEntity<?> createQuiz(@RequestBody QuizDTO quizDTO) {
         try {

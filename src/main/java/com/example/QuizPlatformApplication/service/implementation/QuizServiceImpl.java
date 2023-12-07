@@ -121,6 +121,30 @@ public class QuizServiceImpl implements QuizServiceInterface {
     }
 
     @Override
+    public List<Quiz> getQuizzesByCategory(List<String> categories) {
+        List<Quiz> quizzes = new ArrayList<>();
+
+        for(String category : categories){
+            QuizCategory quizCategory = QuizCategory.valueOf(category);
+            quizzes.addAll(quizRepoInterface.findAllByCategory(quizCategory));
+        }
+
+        return quizzes;
+    }
+
+    @Override
+    public List<Quiz> getQuizzesByDifficulty(List<String> difficulties) {
+        List<Quiz> quizzes = new ArrayList<>();
+
+        for(String difficulty : difficulties){
+            QuizDifficulty quizDifficulty = QuizDifficulty.valueOf(difficulty);
+            quizzes.addAll(quizRepoInterface.findAllByDifficulty(quizDifficulty));
+        }
+
+        return quizzes;
+    }
+
+    @Override
     public boolean isQuizStarted(Quiz quiz, User user) {
         List<QuizProgress> quizProgresses = quizProgressRepoInterface.findByQuizAndUser(quiz, user);
         return quizProgresses.size() != 0 && !quizProgresses.get(quizProgresses.size()-1).getHasEnded();

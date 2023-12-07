@@ -23,6 +23,9 @@ public interface QuizServiceInterface {
 
     List<Quiz> getAllQuizzes();
 
+    List<Quiz> getQuizzesByCategory(List<String> category);
+    List<Quiz> getQuizzesByDifficulty(List<String> difficulty);
+
     boolean isQuizStarted(Quiz quiz, User user);
 
     QuizProgress getLastQuizProgress(Quiz quiz, User user);

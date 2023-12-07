@@ -34,6 +34,9 @@ public class Quiz implements Serializable {
     private int timeLimit;
 
     @Column
+    private String title;
+
+    @Column
     private String description;
 
     @Column

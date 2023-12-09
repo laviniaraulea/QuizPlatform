@@ -1,7 +1,9 @@
 package com.example.QuizPlatformApplication.controller;
 
+import com.example.QuizPlatformApplication.controller.dto.UserDTO;
 import com.example.QuizPlatformApplication.model.User;
 import com.example.QuizPlatformApplication.security.jwttoken.JwtService;
+import com.example.QuizPlatformApplication.service.ServiceException;
 import com.example.QuizPlatformApplication.service.interfaces.AuthenticationServiceInterface;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -11,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/login")
@@ -42,6 +46,32 @@ public class LogInController {
     @GetMapping
     public String login() {
         return "login";
+    }
+
+    @GetMapping("/register")
+    public String register() {
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public @ResponseBody ResponseEntity<?> registerUser(@RequestBody UserDTO user) {
+        String dob = user.getDateOfBirth();
+        LocalDate dateOfBirth;
+        try {
+            dateOfBirth = LocalDate.parse(dob);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid date format");
+        }
+
+        try {
+            authenticationService.signUp(user.getUsername(), user.getPassword(), dateOfBirth);
+            return ResponseEntity.ok().build();
+        }
+        catch (ServiceException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not register user.");
+        }
     }
 
     @GetMapping("/mainPage")

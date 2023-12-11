@@ -1,6 +1,8 @@
 package com.example.QuizPlatformApplication.service.implementation;
 
 import com.example.QuizPlatformApplication.controller.dto.AnswerDTO;
+import com.example.QuizPlatformApplication.controller.dto.FailedAndPassDTO;
+import com.example.QuizPlatformApplication.controller.dto.GeneralStatsDTO;
 import com.example.QuizPlatformApplication.model.*;
 import com.example.QuizPlatformApplication.repository.*;
 import com.example.QuizPlatformApplication.service.ServiceException;
@@ -214,4 +216,58 @@ public class QuizServiceImpl implements QuizServiceInterface {
         quizProgress.setScore(5.0F); // TODO: calculate score
         quizProgressRepoInterface.save(quizProgress);
     }
+
+    @Override
+    public GeneralStatsDTO getGeneralStats(User user) {
+        long totalQuizzesDone = quizProgressRepoInterface.countAllByUserAndHasEnded(user, true);
+        long totalQuizzesCreated = quizRepoInterface.countAllByOwner(user);
+        List<QuizProgress> lstQuizProgress= quizProgressRepoInterface.findByUserAndHasEnded(user, true);
+        float average = 0;
+
+        for(QuizProgress quizProgress : lstQuizProgress){
+            average = average + quizProgress.getScore();
+        }
+
+        average = average / lstQuizProgress.size();
+
+        return new GeneralStatsDTO(totalQuizzesCreated, totalQuizzesDone, average);
+    }
+
+    @Override
+    public GeneralStatsDTO getStatsPerCategory(User user, String category) {
+        long totalQuizzesDone = quizProgressRepoInterface.countAllByUserAndHasEndedAndQuizCategory(user, true, QuizCategory.valueOf(category));
+        long totalQuizzesCreated = quizRepoInterface.countAllByOwnerAndCategory(user, QuizCategory.valueOf(category));
+
+        List<QuizProgress> lstQuizProgress= quizProgressRepoInterface.findByUserAndHasEndedAndQuizCategory(user, true, QuizCategory.valueOf(category));
+        float average = 0;
+
+        for(QuizProgress quizProgress : lstQuizProgress){
+            average = average + quizProgress.getScore();
+        }
+
+        average = average / lstQuizProgress.size();
+
+        return new GeneralStatsDTO(totalQuizzesCreated, totalQuizzesDone, average);
+
+    }
+
+    @Override
+    public FailedAndPassDTO getFailedAndPass(User user) {
+        long noFailedQuizzes = 0;
+        long noPassQuizzes = 0;
+
+        List<QuizProgress> lstQuizProgress= quizProgressRepoInterface.findByUserAndHasEnded(user, true);
+
+        for(QuizProgress quizProgress : lstQuizProgress){
+            if(quizProgress.getScore() >= quizProgress.getQuiz().getPassingScore()){
+                noPassQuizzes += 1;
+            }
+            else {
+                noFailedQuizzes += 1;
+            }
+        }
+
+        return new FailedAndPassDTO(noFailedQuizzes, noPassQuizzes);
+    }
+
 }

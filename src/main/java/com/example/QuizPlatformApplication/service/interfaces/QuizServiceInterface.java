@@ -3,6 +3,8 @@ package com.example.QuizPlatformApplication.service.interfaces;
 
 
 import com.example.QuizPlatformApplication.controller.dto.AnswerDTO;
+import com.example.QuizPlatformApplication.controller.dto.FailedAndPassDTO;
+import com.example.QuizPlatformApplication.controller.dto.GeneralStatsDTO;
 import com.example.QuizPlatformApplication.model.Quiz;
 import com.example.QuizPlatformApplication.model.QuizEntry;
 import com.example.QuizPlatformApplication.model.QuizProgress;
@@ -33,4 +35,8 @@ public interface QuizServiceInterface {
     void startQuiz(Quiz quiz, User user) throws ServiceException;
 
     void endQuiz(Quiz quiz, User user, List<AnswerDTO> userAnswers) throws ServiceException;
+
+    GeneralStatsDTO getGeneralStats(User user);
+    GeneralStatsDTO getStatsPerCategory(User user, String category);
+    FailedAndPassDTO getFailedAndPass(User user);
 }

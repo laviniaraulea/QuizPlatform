@@ -269,14 +269,8 @@
                 Authorization: `Bearer ${bearerToken}`
             },
             success: function(response) {
-                // Clear existing data in the table
-                quizzesTableRef.bootstrapTable('removeAll');
-
                 // Add the new data to the table
-                quizzesTableRef.bootstrapTable('append', response);
-
-                // Refresh the table to reflect the changes
-                quizzesTableRef.bootstrapTable('refresh');
+                quizzesTableRef.bootstrapTable('load', response);
             },
             error: function(error) {
                 generateFailureToast("Failed to filter quizzes!");

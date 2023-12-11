@@ -4292,64 +4292,48 @@ false Zulu
     <sequence id="277" parent="276" name="profiles_id_seq">
       <DasType>bigint|0s</DasType>
       <ObjectId>25219</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
       <StateNumber>1611</StateNumber>
       <OwnerName>quiz</OwnerName>
     </sequence>
     <sequence id="278" parent="276" name="quiz_entries_id_seq">
       <DasType>bigint|0s</DasType>
       <ObjectId>25228</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
       <StateNumber>1612</StateNumber>
       <OwnerName>quiz</OwnerName>
     </sequence>
     <sequence id="279" parent="276" name="quiz_options_id_seq">
       <DasType>bigint|0s</DasType>
       <ObjectId>25237</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
       <StateNumber>1613</StateNumber>
       <OwnerName>quiz</OwnerName>
     </sequence>
     <sequence id="280" parent="276" name="quiz_progress_id_seq">
       <DasType>bigint|0s</DasType>
       <ObjectId>25306</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
       <StateNumber>1636</StateNumber>
       <OwnerName>quiz</OwnerName>
     </sequence>
     <sequence id="281" parent="276" name="quiz_user_answer_id_seq">
       <DasType>bigint|0s</DasType>
       <ObjectId>25313</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
       <StateNumber>1637</StateNumber>
       <OwnerName>quiz</OwnerName>
     </sequence>
     <sequence id="282" parent="276" name="quizzes_id_seq">
       <DasType>bigint|0s</DasType>
       <ObjectId>25246</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
       <StateNumber>1614</StateNumber>
       <OwnerName>quiz</OwnerName>
     </sequence>
     <sequence id="283" parent="276" name="user_answers_id_seq">
       <DasType>bigint|0s</DasType>
       <ObjectId>25257</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
       <StateNumber>1615</StateNumber>
       <OwnerName>quiz</OwnerName>
     </sequence>
     <sequence id="284" parent="276" name="users_id_seq">
       <DasType>bigint|0s</DasType>
       <ObjectId>25266</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
       <StateNumber>1616</StateNumber>
       <OwnerName>quiz</OwnerName>
     </sequence>

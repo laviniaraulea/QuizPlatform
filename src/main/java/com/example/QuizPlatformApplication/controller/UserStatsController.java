@@ -23,7 +23,7 @@ public class UserStatsController {
     private UserServiceInterface userService;
 
     @GetMapping("/getGeneralStats")
-    public @ResponseBody ResponseEntity<?> getGeneralStats(@RequestBody String username) {
+    public @ResponseBody ResponseEntity<?> getGeneralStats(@RequestParam String username) {
         try {
             User user = userService.getUserByUsername(username);
             if(user == null) {
@@ -36,7 +36,7 @@ public class UserStatsController {
         }
     }
 
-    @GetMapping("/getStatsPerCategory")
+    @PostMapping("/getStatsPerCategory")
     public @ResponseBody ResponseEntity<?> getStatsPerCategory(@RequestBody UsernameCategoryDTO data) {
         try {
             String username = data.getUsername();
@@ -55,7 +55,7 @@ public class UserStatsController {
     }
 
     @GetMapping("/getFailedAndPassStats")
-    public @ResponseBody ResponseEntity<?> getFailedAndPass(@RequestBody String username) {
+    public @ResponseBody ResponseEntity<?> getFailedAndPass(@RequestParam String username) {
         try {
             User user = userService.getUserByUsername(username);
             if(user == null) {

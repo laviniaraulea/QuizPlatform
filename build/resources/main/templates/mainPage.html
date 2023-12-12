@@ -113,6 +113,10 @@
             background-color: #e74c3c;
             margin-top: 20px;
         }
+        .btn-see-stats {
+            background-color: #3498db;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -170,6 +174,7 @@
 
     <div class="create-quiz-button">
         <button id="createQuizBtn" class="btn btn-create-quiz">Create Quiz</button>
+        <button id="seeStatistics" class="btn btn-see-stats">See statistics</button>
     </div>
 </div>
 
@@ -188,6 +193,7 @@
     const categoryDdlRef = $("#categoryDdl");
     let bearerToken = /*[[${token}]]*/ 'default'; // De asta am nevoie, altfel nu am autorizatie sa fac API request-uri
     const createQuizBtnRef = $("#createQuizBtn")
+    const seeStatisticsBtn = $("#seeStatistics")
 
     $(document).ready(function () {
         // tooltip to see the quiz details on mouse hover
@@ -209,7 +215,7 @@
 
         quizzesTableRef.bootstrapTable({
             method: 'get',
-            url: '/quiz/get/quizzes',
+            url: 'http://localhost:8080/quiz/get/quizzes',
             buttonsAlign: 'left',
             toolbarAlign: 'right',
             showColumns: true,
@@ -237,7 +243,7 @@
     });
 
     function fetchQuizzesByDifficulty(difficulty) {
-        const url = '/quiz/get/quizzesByDifficulty';
+        const url = 'http://localhost:8080/quiz/get/quizzesByDifficulty';
 
         $.ajax({
             type: 'GET',
@@ -258,7 +264,7 @@
     }
 
     function fetchQuizzesByCategory(category) {
-        const url = '/quiz/get/quizzesByCategory';
+        const url = 'http://localhost:8080/quiz/get/quizzesByCategory';
 
         $.ajax({
             type: 'GET',
@@ -367,4 +373,7 @@
     createQuizBtnRef.click(function () {
         // TODO: Aici e task-ul de "Create Quiz"
     });
+    seeStatisticsBtn.click(function (){
+        window.location.href = 'userStats.html'
+    })
 </script>

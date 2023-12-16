@@ -46,6 +46,7 @@
         .app-description {
             background-color: #3498db;
             padding: 20px;
+            margin: 10px;
             border-radius: 10px;
             color: #fff;
         }
@@ -115,9 +116,10 @@
     <title>Title</title>
 </head>
 <body>
-<div class="quiz-list">
+<div class="container">
     <h2>How you've done</h2>
-    <div class="container">
+    <div class="app-description">
+        <div class="row">
         <div class="col-md-6">
             <div class="form-group">
                 <label for="categoryDdl">Category:</label>
@@ -132,12 +134,17 @@
                 </select>
             </div>
         </div>
+
+        <div class="col-md-6" id="stats-by-category">
+
+        </div>
+        </div>
     </div>
-    <div class="container" id="general-stats">
+    <div class="app-description" id="general-stats">
         <h3>General Information</h3>
 
     </div>
-    <div class="container" id="failed-passed">
+    <div class="app-description" id="failed-passed">
         <h3>Failed and passed</h3>
     </div>
 </div>
@@ -233,21 +240,21 @@
             category : selectedCategory
         };
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             url: url,
-            dataType: 'text',
             contentType: 'application/json',
             data:JSON.stringify(requestData),
-            cache: false,
+
             headers: {
                 Authorization: `Bearer ${bearerToken}`
             },
-            success: function(response) {
+            success: function(data, status, xhr) {
                 // Add the new data to the table
-                console.log(response)
-                $('#general-stats').append("<div>Average score: "+response.averageScoreAllQuizzes +"</div>")
-                $('#general-stats').append("<div>Quizzes created: "+response.totalQuizzesCreated +"</div>")
-                $('#general-stats').append("<div>Quizzes done: "+response.totalQuizzesDone +"</div>")
+                console.log(data)
+                $('#stats-by-category').empty()
+                $('#stats-by-category').append("<div>Average score: "+data.averageScoreAllQuizzes +"</div>")
+                $('#stats-by-category').append("<div>Quizzes created: "+data.totalQuizzesCreated +"</div>")
+                $('#stats-by-category').append("<div>Quizzes done: "+data.totalQuizzesDone +"</div>")
             },
             error: function(error) {
                 generateFailureToast("No quizzes met your criteria!");

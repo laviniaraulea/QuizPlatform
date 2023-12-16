@@ -215,7 +215,7 @@
 
         quizzesTableRef.bootstrapTable({
             method: 'get',
-            url: 'http://localhost:8080/quiz/get/quizzes',
+            url: '/quiz/get/quizzes',
             buttonsAlign: 'left',
             toolbarAlign: 'right',
             showColumns: true,
@@ -264,7 +264,7 @@
     }
 
     function fetchQuizzesByCategory(category) {
-        const url = 'http://localhost:8080/quiz/get/quizzesByCategory';
+        const url = '/quiz/get/quizzesByCategory';
 
         $.ajax({
             type: 'GET',
@@ -374,6 +374,6 @@
         // TODO: Aici e task-ul de "Create Quiz"
     });
     seeStatisticsBtn.click(function (){
-        window.location.href = 'userStats.html'
+        window.location.href = '/login/userStats'
     })
 </script>

@@ -82,4 +82,13 @@ public class LogInController {
         model.addAttribute("token", token);
         return "mainPage";
     }
+
+    @GetMapping("/userStats")
+    public String stats(Model model, HttpSession session) {
+        String token = (String) session.getAttribute("token");
+
+        // Pass the token to view
+        model.addAttribute("token", token);
+        return "userStats";
+    }
 }

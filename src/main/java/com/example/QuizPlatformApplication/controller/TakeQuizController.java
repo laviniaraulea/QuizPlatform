@@ -1,8 +1,10 @@
 package com.example.QuizPlatformApplication.controller;
 
-import com.example.QuizPlatformApplication.controller.dto.*;
+import com.example.QuizPlatformApplication.controller.dto.AnswerDTO;
+import com.example.QuizPlatformApplication.controller.dto.CorrectAnswersDTO;
+import com.example.QuizPlatformApplication.controller.dto.DTOUtils;
+import com.example.QuizPlatformApplication.controller.dto.QuestionInfoDTO;
 import com.example.QuizPlatformApplication.model.*;
-import com.example.QuizPlatformApplication.security.jwttoken.JwtService;
 import com.example.QuizPlatformApplication.service.ServiceException;
 import com.example.QuizPlatformApplication.service.interfaces.QuizServiceInterface;
 import com.example.QuizPlatformApplication.service.interfaces.UserServiceInterface;
@@ -34,13 +36,12 @@ public class TakeQuizController {
             return ResponseEntity.ok(quiz.getQuizEntries().size());
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Quiz Id format");
         }
     }
 
     @GetMapping("/quiz/{quizId}/questions")
-    public @ResponseBody ResponseEntity<?> getQuizQuestions(@PathVariable String quizId, @RequestBody String username) {
+    @CrossOrigin(origins="*")
+    public @ResponseBody ResponseEntity<?> getQuizQuestions(@PathVariable String quizId, @RequestParam String username) {
         // TODO: in the future we will verify the identity of the user by using JWT
         try {
             Long quizIdLong = Long.parseLong(quizId);
@@ -67,8 +68,9 @@ public class TakeQuizController {
     }
 
     @GetMapping("/quiz/{quizId}/questions/{questionId}")
-    public @ResponseBody ResponseEntity<?> getQuizQuestionOfId(@PathVariable String quizId, @PathVariable String questionId, @RequestBody String username) {
+    public @ResponseBody ResponseEntity<?> getQuizQuestionOfId(@PathVariable String quizId, @PathVariable String questionId, @RequestParam String username) {
         // TODO: in the future we will verify the identity of the user by using JWT
+
         try {
             Long quizIdLong = Long.parseLong(quizId);
             Long questionIdLong = Long.parseLong(questionId);
@@ -96,9 +98,11 @@ public class TakeQuizController {
     public @ResponseBody ResponseEntity<?> startQuiz(@PathVariable String quizId, @RequestBody String username) {
         // TODO: in the future we will verify the identity of the user by using JWT
         try {
+            //System.out.println("ok!");
             Long quizIdLong = Long.parseLong(quizId);
             Quiz quiz = quizService.getQuizById(quizIdLong);
             User user = userService.getUserByUsername(username);
+            System.out.println(user);
 
             if(user == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
@@ -117,17 +121,13 @@ public class TakeQuizController {
     }
 
     @PostMapping("/quiz/{quizId}/end")
-    public @ResponseBody ResponseEntity<?> endQuiz(@PathVariable String quizId, @RequestBody EndQuizRequest request) {
+    public @ResponseBody ResponseEntity<?> endQuiz(@PathVariable String quizId, @RequestParam String username, @RequestBody List<AnswerDTO> userAnswers) {
         // TODO: in the future we will verify the identity of the user by using JWT
         try {
-            String username = request.getUsername();
-            List<AnswerDTO> userAnswers = request.getUserAnswers();
-
             Long quizIdLong = Long.parseLong(quizId);
             Quiz quiz = quizService.getQuizById(quizIdLong);
 
             User user = userService.getUserByUsername(username);
-
             if(user == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
             }
@@ -137,6 +137,7 @@ public class TakeQuizController {
             }
 
             quizService.endQuiz(quiz, user, userAnswers);
+
             return ResponseEntity.ok().build();
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -160,15 +161,14 @@ public class TakeQuizController {
             }
 
             QuizProgress quizProgress = quizService.getLastQuizProgress(quiz, user);
-            QuizProgressDTO quizProgressDTO = DTOUtils.getFromDTO(quizProgress);
-            return ResponseEntity.ok(quizProgressDTO);
+            return ResponseEntity.ok(quizProgress);
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @GetMapping("/quiz/{quizId}/answers")
-    public @ResponseBody ResponseEntity<?> getQuizCorrectAnswers(@PathVariable String quizId, @RequestBody String username) {
+    public @ResponseBody ResponseEntity<?> getQuizCorrectAnswers(@PathVariable String quizId, @RequestParam String username) {
         // TODO: in the future we will verify the identity of the user by using JWT
         try {
             Long quizIdLong = Long.parseLong(quizId);
@@ -179,25 +179,23 @@ public class TakeQuizController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
             }
 
-            QuizProgress quizProgress = quizService.getLastQuizProgress(quiz, user);
-            if(quizProgress == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quiz not started");
-            }
-            if(!quizProgress.getHasEnded()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quiz in progress");
-            }
-
             List<CorrectAnswersDTO> correctAnswers = new ArrayList<>();
             for (QuizEntry quizEntry : quiz.getQuizEntries()) {
                 List<Pair<Long, String>> optionsAndExplanations = new ArrayList<>();
                 List<Long> correctAnswersIds = new ArrayList<>();
 
-                for(QuizOptions quizOption : quizEntry.getOptionAndExplanation()) {
-                    optionsAndExplanations.add(Pair.of(quizOption.getId(), quizOption.getExplanation()));
-                    if(quizOption.isCorrectOption()) {
+                for (QuizOptions quizOption : quizEntry.getOptionAndExplanation()) {
+                    String explanation = quizOption.getExplanation();
+
+                    if (explanation != null) {
+                        optionsAndExplanations.add(Pair.of(quizOption.getId(), explanation));
+                    }
+
+                    if (quizOption.isCorrectOption()) {
                         correctAnswersIds.add(quizOption.getId());
                     }
                 }
+
                 correctAnswers.add(new CorrectAnswersDTO(quizEntry.getId(), optionsAndExplanations, correctAnswersIds));
             }
 

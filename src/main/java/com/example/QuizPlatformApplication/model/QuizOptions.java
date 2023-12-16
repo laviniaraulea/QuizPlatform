@@ -28,6 +28,14 @@ public class QuizOptions implements Serializable {
     @Column
     private boolean isCorrectOption;
 
+    public QuizOptions(Long id, QuizEntry quizEntry, String option, String explanation, boolean isCorrectOption) {
+        this.id = id;
+        this.quizEntry = quizEntry;
+        this.option = option;
+        this.explanation = explanation;
+        this.isCorrectOption = isCorrectOption;
+    }
+
     public QuizOptions() {
     }
 }

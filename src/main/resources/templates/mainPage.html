@@ -137,7 +137,7 @@
                     <div class="form-group">
                         <label for="difficultyDdl">Difficulty:</label>
                         <select class="form-control" id="difficultyDdl">
-                            <option value="EAZY">Easy</option>
+                            <option value="EASY">Easy</option>
                             <option value="MEDIUM">Medium</option>
                             <option value="HARD">Hard</option>
                         </select>
@@ -194,6 +194,14 @@
     let bearerToken = /*[[${token}]]*/ 'default'; // De asta am nevoie, altfel nu am autorizatie sa fac API request-uri
     const createQuizBtnRef = $("#createQuizBtn")
     const seeStatisticsBtn = $("#seeStatistics")
+
+    $(document).ready(function () {
+        $('#table-id').on('click', '.btn-take-quiz', function () {
+            const index = $(this).data('index');
+            const quizId = 4;
+            takeQuiz(quizId);
+        });
+    });
 
     $(document).ready(function () {
         // tooltip to see the quiz details on mouse hover
@@ -297,13 +305,14 @@
     }
 
     function buttonsFormatter(value, row, index) {
+        const quizId = row.id; // Assuming your quiz object has an 'id' property
         const tooltipId = "tooltip_" + index;
 
         let detailsBtn = '<button type="button" class="btnDetails btn btn-details" data-toggle="tooltip" data-placement="bottom" id="' + tooltipId + '">Hover for details</button>\n';
         detailsBtn += '<div class="tooltip-description" style="display: none;">' + row.description + '</div>';
 
-        return detailsBtn +
-                '<button class="btnTakeQuiz btn btn-take-quiz">Take Quiz</button>'
+        // Add data-quiz-id attribute to store the quiz ID
+        return detailsBtn + '<button class="btnTakeQuiz btn btn-take-quiz" data-quiz-id="' + quizId + '">Take Quiz</button>';
     }
 
     function categoryFormatter(value, row, index) {
@@ -364,14 +373,46 @@
         }).showToast();
     }
 
-    window.moderateEvents = {
-        'click .btnTakeQuiz': function (e, value, row) {
-            // TODO: Aici e task-ul de "Take Quiz"
+    $(document).on('click', '.btn-take-quiz', function() {
+        // Get the quiz ID directly from the data attribute
+        const quizId = $(this).data('quiz-id');
+        // Check if the quizId is defined and not null
+        if (quizId !== undefined && quizId !== null) {
+            takeQuiz(quizId);
+        } else {
+            console.error("Quiz ID is undefined or null.");
+            // Handle the case where the quiz ID is not available
         }
+    });
+
+    function takeQuiz(quizId) {
+        sessionStorage.setItem('quizId', quizId)
+        $.ajax({
+            url: '/login/takeQuiz',
+            method: 'GET',
+            contentType:'application/json',
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            cache: false,
+            success: function (data, status, xhr) {
+                if (xhr.status === 200) {
+                    // Redirect to the quiz page or handle success
+                    window.location.href = "/login/takeQuiz";
+                } else {
+                    console.error("Status: " + xhr.status);
+                    // Additional error handling if needed
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("An error occurred. Status: " + xhr.status);
+                // Additional error handling if needed
+            }
+        });
     }
 
     createQuizBtnRef.click(function () {
-        // TODO: Aici e task-ul de "Create Quiz"
+        window.location.href = '/login/createQuiz'
     });
     seeStatisticsBtn.click(function (){
         window.location.href = '/login/userStats'

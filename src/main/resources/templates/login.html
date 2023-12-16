@@ -225,7 +225,7 @@
         };
 
         $.ajax({
-           url:'/login/auth',
+           url:'http://localhost:8080/login/auth',
            type: 'POST',
            dataType: 'text',
            contentType: 'application/json',
@@ -238,7 +238,9 @@
                     // Wait for 1.5 seconds and then redirect to the main page
                     setTimeout(function () {
                         loading.style.display = "none";
-                        window.location.href = "/login/mainPage";
+                        window.location.href = "mainPage.html";
+                        localStorage.setItem("username",$("#username").val())
+                        localStorage.setItem("token",data);
                     }, 1500); // 1500 milliseconds = 1.5 seconds
                 } else {
                     generateFailureToast("Login failed. Please try again!");

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Statistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css">
+    <style>
+        body {
+            background: linear-gradient(120deg, #3498db, #8e44ad);
+            font-family: 'Montserrat', sans-serif; /* Updated font */
+            text-align: center;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #C0D6E4;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive; /* Updated font */
+            font-size: 36px;
+            color: #5a4667; /* Updated font color */
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif; /* Updated font */
+            font-size: 36px;
+            color: #5a4667; /* Updated font color */
+            margin-bottom: 20px;
+        }
+
+        .app-description {
+            background-color: #3498db;
+            padding: 20px;
+            border-radius: 10px;
+            color: #fff;
+        }
+
+        .quiz-list {
+            margin-top: 20px;
+        }
+
+        .quiz-list table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            border-radius: 100px; /* Rounded table corners */
+        }
+
+        .quiz-list table, .quiz-list th, .quiz-list td {
+            border: 1px solid #fff;
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        .quiz-list th, .quiz-list td {
+            background-color: #5a4667;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .quiz-list th {
+            background-color: #5a4667;
+            color: #fff;
+            border-radius: 10px;
+        }
+
+        .quiz-list tbody tr:hover {
+            background-color: #5a4667;
+        }
+
+        .btn {
+            background-color: #8e44ad;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 12px 24px; /* Slightly bigger buttons */
+            font-size: 18px; /* Larger font size */
+        }
+
+        .btn:hover {
+            background-color: #6c3483;
+        }
+
+        .btn-details {
+            background-color: #3498db;
+        }
+
+        .btn-take-quiz {
+            background-color: #27ae60;
+        }
+
+        .btn-create-quiz {
+            background-color: #e74c3c;
+            margin-top: 20px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="quiz-list">
+    <h2>How you've done</h2>
+    <div class="container">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="categoryDdl">Category:</label>
+                <select class="form-control" id="categoryDdl">
+                    <option value="GENERAL_KNOWLEDGE">General knowledge</option>
+                    <option value="SCIENCE_AND_NATURE">Science & Nature</option>
+                    <option value="HISTORY">History</option>
+                    <option value="FOOD_AND_COOKING">Food & Cooking</option>
+                    <option value="ART_AND_ARTISTS">Art & Artists</option>
+                    <option value="FAMOUS_PERSONALITIES">Famous personalities</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="general-stats">
+        <h3>General Information</h3>
+
+    </div>
+    <div class="container" id="failed-passed">
+        <h3>Failed and passed</h3>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+</body>
+</html>
+<script th:inline="javascript">
+    const generateSuccessToast = (message) => {
+        Toastify({
+            text:message,
+            duration: 3000,
+            close: true,
+            gravity:"top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: "linear-gradient(to right, #00b09b, #96c93d",
+            }
+        }).showToast();
+    }
+
+    const generateFailureToast = (message) => {
+        Toastify({
+            text:message,
+            duration: 3000,
+            close: true,
+            gravity:"top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: "#ED2123A",
+                background: "-webkit-linear-gradient(to right, #93291E, #ED213A",
+                background: "linear-gradient(to right, #93291E, #ED213A",
+            }
+        }).showToast();
+    }
+    let username =localStorage.getItem("username")
+    const  bearerToken=localStorage.getItem("token")
+    $(document).ready(function () {
+        let url = 'http://localhost:8080/userStats/getGeneralStats';
+        let requestData = {
+            username: username
+        };
+        $.ajax({
+            type: 'GET',
+            url: url,
+            contentType: 'application/json',
+            data:{username: username},
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            success: function(response) {
+                // Add the new data to the table
+                console.log(response)
+                $('#general-stats').append("<div>Average score: "+response.averageScoreAllQuizzes +"</div>")
+                $('#general-stats').append("<div>Quizzes created: "+response.totalQuizzesCreated +"</div>")
+                $('#general-stats').append("<div>Quizzes done: "+response.totalQuizzesDone +"</div>")
+            },
+            error: function(error) {
+                generateFailureToast("Failed to filter quizzes!");
+            }
+        });
+        url = 'http://localhost:8080/userStats/getFailedAndPassStats';
+        $.ajax({
+            type: 'GET',
+            url: url,
+            contentType: 'application/json',
+            data: {username: username},
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            success: function (response) {
+                // Add the new data to the table
+                console.log(response)
+                $('#failed-passed').append("<div>Failed quizzes: " + response.noFailedQuizzes + "</div>")
+                $('#failed-passed').append("<div>Passed quizzes: " + response.noPassQuizzes + "</div>")
+            },
+            error: function (error) {
+                generateFailureToast("Failed to filter quizzes!");
+            }
+        });
+    })
+    $('#categoryDdl').on('change',function (){
+        let url = 'http://localhost:8080/userStats/getStatsPerCategory';
+        const selectedCategory = $(this).val();
+        let requestData = {
+            username: username,
+            category : selectedCategory
+        };
+        $.ajax({
+            type: 'GET',
+            url: url,
+            dataType: 'text',
+            contentType: 'application/json',
+            data:JSON.stringify(requestData),
+            cache: false,
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            success: function(response) {
+                // Add the new data to the table
+                console.log(response)
+                $('#general-stats').append("<div>Average score: "+response.averageScoreAllQuizzes +"</div>")
+                $('#general-stats').append("<div>Quizzes created: "+response.totalQuizzesCreated +"</div>")
+                $('#general-stats').append("<div>Quizzes done: "+response.totalQuizzesDone +"</div>")
+            },
+            error: function(error) {
+                generateFailureToast("No quizzes met your criteria!");
+            }
+        });
+    })
+
+
+</script>

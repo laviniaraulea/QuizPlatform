@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Alte metaetichete, legături către fonturi, Bootstrap etc. -->
+
+    <style>
+        body {
+            background: linear-gradient(120deg, #3498db, #8e44ad);
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #C0D6E4;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 36px;
+            color: #5a4667;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            color: #5a4667;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question {
+            background-color: #fff;
+            border: 1px solid #5a4667;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .quiz-answer {
+            background-color: #5a4667;
+            color: #fff;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .quiz-answer:hover {
+            background-color: #6c3483;
+        }
+
+        .btn {
+            background-color: #8e44ad;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 12px 24px;
+            font-size: 18px;
+        }
+
+        .btn:hover {
+            background-color: #6c3483;
+        }
+
+        .btn-next {
+            background-color: #8e44ad; /* Match the button color with the design */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 12px 24px;
+            font-size: 18px;
+        }
+        .selected-option {
+            background-color: lightcoral; /* Change this to the desired color */
+            color: white; /* Change this to the desired text color */
+        }
+
+        .btn-next:hover {
+            background-color: #6c3483;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Quiz</h1>
+    <div id="form-container"></div>
+    <div id="quizQuestionContainer"></div>
+    <div id="quizResultsContainer"></div>
+
+
+    <!-- Example button with dynamically assigned ID -->
+    <button class="btn btn-primary" id="submitQuizBtn" style="display: none;">Submit</button>
+
+
+
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    let bearerToken =  'default';
+    //let bearerToken = getCookie("token")
+    //alert(bearerToken);
+    // Assuming you have a variable `quizId` that holds the ID of the quiz
+    //let quizId = 4; // Replace with your actual quiz ID
+    let quizId = sessionStorage.getItem('quizId')
+
+    let username = "raul"; // replace with your dynamic username
+    ///alert(quizId);
+    // Function to start the quiz
+
+
+    ///let startQuizBtn= window.document.getElementById("startQuizBtn")
+
+    let questionContainers;
+    let currentQuestionId = null;
+
+    $.ajax({
+
+        url: `/login/quiz/${quizId}/start`,
+        type: 'POST',  // Ensure that it's a POST request
+        data: username,
+        contentType: 'application/json',
+        headers: {
+            Authorization: `Bearer ${bearerToken}`
+        },
+        cache: false,
+        success: function () {
+            //alert("Quiz Started!");
+            $.ajax({
+                url: `/login/quiz/${quizId}/questions`,
+                type: 'GET',
+                //contentType:'text/plain',
+                //dataType:'application/json',
+                //processData: false,
+                headers: {
+                    Authorization: `Bearer ${bearerToken}`
+                },
+                data: {username:`raul`},
+                ///cache: false,
+
+                success: function (response) {
+                    // Add code to navigate to the quiz questions page or perform other actions
+
+                    console.log(response)
+                    questions = response
+                    generateForm((questions))
+
+
+                },
+                error: function (xhr, status, error) {
+                    alert("An error occurred. Status: " + xhr.responseText);
+                }
+            });
+
+        },
+        error: function (xhr, status, error) {
+            alert("An error occurred. Status: " + xhr.status);
+        }
+    });
+
+
+    function generateForm(questions) {
+        const quizQuestionContainer = document.getElementById("quizQuestionContainer");
+        const userAnswers = Array.from({ length: questions.length }, () => ({ answersIds: [] })); // Array to store user answers for each question
+        console.log(userAnswers);
+
+        // Function to hide all questions
+        const hideAllQuestions = () => {
+            quizQuestionContainer.querySelectorAll('.quiz-question').forEach(question => {
+                question.style.display = 'none';
+            });
+        };
+
+        // Function to save answers and move to the next question
+        function saveAndMoveToNext(currentIndex) {
+            // Hide the current question and the "Next" button
+            const currentQuestion = quizQuestionContainer.children[currentIndex];
+            const nextButton = currentQuestion.querySelector('.btn-next');
+            if (currentQuestion && nextButton) {
+                currentQuestion.style.display = 'none';
+                nextButton.style.display = 'none';
+            }
+
+            // Display the next question and its "Next" button
+            const nextQuestion = quizQuestionContainer.children[currentIndex + 1];
+            const nextQuestionButton = quizQuestionContainer.querySelector('.btn-next');
+            if (nextQuestion && nextQuestionButton) {
+                nextQuestion.style.display = 'block';
+                nextQuestionButton.style.display = 'block';
+            }
+        }
+
+        // Function to save answers and end the quiz
+        function saveAndEndQuiz() {
+            // Perform actions when the quiz ends (e.g., submit the quiz)
+            console.log('Quiz Ended!');
+            console.log(userAnswers);
+
+            // Send user answers to the server using an AJAX request
+            // You may need to customize this part based on your server-side logic
+            $.ajax({
+                url: `/login/quiz/${quizId}/end?username=${username}`,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(userAnswers.map((answers, i) => ({
+                    questionId: questions[i].questionId,
+                    answersIds: answers.answersIds.map(String)
+                }))),
+                success: function (response) {
+                    console.log("Answers submitted successfully:", response);
+                    fetchCorrectAnswers();
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error submitting answers:", error);
+                }
+            });
+
+            // Hide unnecessary elements
+            hideUnnecessaryElements();
+        }
+
+        questions.forEach((question, index) => {
+            const questionDiv = document.createElement("div");
+            questionDiv.className = "quiz-question";
+            questionDiv.id = `question-${index + 1}`; // Unique ID for each question
+            questionDiv.innerHTML = `<h2>${question.questionText}</h2>`;
+
+            // Assuming options are in a list, you can change this based on your UI requirements
+            const optionsList = document.createElement("div");
+            optionsList.className = "quiz-answers";
+            question.possibleAnswers.forEach(pair => {
+                const optionDiv = document.createElement("div");
+                optionDiv.className = "quiz-answer";
+                optionDiv.innerHTML = pair.second;
+
+                // Add an event listener for the option to store the user's selection
+                optionDiv.addEventListener('click', () => {
+                    console.log(userAnswers);
+                    const isSelected = userAnswers[index].answersIds.includes(pair.first);
+
+                    if (isSelected) {
+                        // Unselect the option if already selected
+                        userAnswers[index].answersIds = userAnswers[index].answersIds.filter(id => id !== pair.first);
+                        optionDiv.style.backgroundColor = ''; // Remove the background color
+                    } else {
+                        // Select the option if not already selected
+                        userAnswers[index].answersIds.push(pair.first);
+                        optionDiv.style.backgroundColor = 'lightcoral'; // Change the background color
+                    }
+                });
+                optionsList.appendChild(optionDiv);
+            });
+
+            questionDiv.appendChild(optionsList);
+
+            // Add a "Next" button after each question except for the last one
+            if (index < questions.length - 1) {
+                const nextButton = document.createElement("button");
+                nextButton.className = "btn-next";
+                nextButton.innerText = "Next";
+
+                // Add an event listener for the "Next" button
+                nextButton.addEventListener('click', () => {
+                    saveAndMoveToNext(index);
+                });
+
+                questionDiv.appendChild(nextButton);
+            } else {
+                // Add an "End" button for the last question
+                const endButton = document.createElement("button");
+                endButton.className = "btn-next btn-end"; // Apply the same class as "Next" button
+                endButton.innerText = "End";
+
+                // Add an event listener for the "End" button
+                endButton.addEventListener('click', () => {
+                    saveAndEndQuiz();
+                });
+
+                questionDiv.appendChild(endButton);
+            }
+
+            quizQuestionContainer.appendChild(questionDiv);
+
+            // Initially, hide all questions except the first one
+            if (index > 0) {
+                questionDiv.style.display = 'none';
+            }
+        });
+
+        // Display the first question
+        hideAllQuestions();
+        quizQuestionContainer.children[0].style.display = 'block';
+    }
+
+
+
+
+
+    function fetchQuestionDetails(questionId) {
+        return $.ajax({
+            url: `/login/quiz/${quizId}/questions/${questionId}?username=${username}`,
+            type: 'GET',
+
+            success: function (questionDetails) {
+                return questionDetails;
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching question details:", error);
+            }
+        });
+    }
+
+
+    // Function to get the correct option text for a question
+    // Function to get the correct option text for a question
+    function getCorrectOptionText(questionDetails, optionId) {
+        const possibleAnswers = questionDetails.possibleAnswers;
+
+        // Check if possibleAnswers is defined and is an array
+        if (Array.isArray(possibleAnswers)) {
+            const correctOption = possibleAnswers.find(option => option.first === optionId);
+            return correctOption ? correctOption.second : `Option ${optionId}`;
+        } else {
+            // Handle the case where possibleAnswers is not defined or not an array
+            return `Option ${optionId}`;
+        }
+    }
+
+
+    // Modify the fetchCorrectAnswers function to fetch question details synchronously
+    function fetchCorrectAnswers() {
+        $.ajax({
+            url: `/login/quiz/${quizId}/answers?username=${username}`,
+            type: "GET",
+            success: async function (correctAnswers) {
+                console.log("Correct answers fetched successfully:", correctAnswers);
+                hideUnnecessaryElements();
+
+                let totalCorrectAnswers = 0;
+
+                // Iterate through correct answers and fetch question details for each
+                for (const entry of correctAnswers) {
+                    totalCorrectAnswers += entry.correctAnswersIds.length;
+                    let questionId=entry.quizEntryId;
+
+                    const questionDetails = await fetchQuestionDetails(questionId);
+
+                    const entryDiv = document.createElement('div');
+
+                    entryDiv.innerHTML = `<h3>${questionDetails.questionText}:</h3>`;
+
+                    // Display correct options' text
+                    entry.correctAnswersIds.forEach(optionId => {
+                        const optionText = getCorrectOptionText(questionDetails, optionId);
+                        const optionParagraph = document.createElement('p');
+                        optionParagraph.textContent = `Correct answer: ${optionText}`;
+                        entryDiv.appendChild(optionParagraph);
+                    });
+
+                    const hrElement = document.createElement('hr');
+                    entryDiv.appendChild(hrElement);
+
+                    quizResultsContainer.appendChild(entryDiv);
+                }
+
+                // Display the total number of correct answers out of the total number of questions
+
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching correct answers:", error);
+            }
+        });
+    }
+
+
+    // Function to hide unnecessary elements
+    function hideUnnecessaryElements() {
+        const formContainer = document.getElementById('form-container');
+        formContainer.style.display = 'none';
+
+        const quizQuestionContainer = document.getElementById('quizQuestionContainer');
+        quizQuestionContainer.style.display = 'none';
+
+        const submitQuizBtn = document.getElementById('submitQuizBtn');
+        submitQuizBtn.style.display = 'none';
+    }
+
+
+
+
+    let questions;
+
+
+    function getCookie(cookieName) {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.indexOf(cookieName + '=') === 0) {
+                return cookie.substring(cookieName.length + 1);
+            }
+        }
+        return null;
+    }
+
+
+</script>
+</body>
+</html>

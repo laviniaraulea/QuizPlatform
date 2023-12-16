@@ -302,7 +302,7 @@
                             </td>
                         </tr>
                     </table>
-                    <button class="btn" id="saveQuizBtn" style="margin-top: 2%">Save Quiz</button>
+
             </div>
             <div class="col">
                 <div class="content-list">
@@ -327,8 +327,6 @@
         </div>
 
     </div>
-
-
 
     <div id="createQuestionModal" class="create-modal">
         <!-- Modal content -->
@@ -485,11 +483,203 @@ refacut dupa ce rezolvam JWT
         window.location.href = "/login/mainPage"
     }
 
-    let quizId = 1;
+    let quizOptions = []
 
-    let saveQuizBtn = document.getElementById("saveQuizBtn")
-    saveQuizBtn.addEventListener("click",  function (){
+    //show createOptionModal
+    let addOptionBtn = window.document.getElementById("addOptionBtn")
+    let optionCreate = window.document.getElementById("createOptionModal")
+    let spanOption = document.getElementById("closeOption");
+    addOptionBtn.onclick = function() {
+        optionCreate.style.display = "block";
+    }
+    // When the user clicks on <span> (x), close the modal
+    spanOption.onclick = function() {
+        optionCreate.style.display = "none";
+    }
 
+    //optionIsCorrect radio buttons
+    let optionIsCorrectTrue = window.document.getElementById("optionIsCorrectTrue")
+    let optionIsCorrectFalse = window.document.getElementById("optionIsCorrectFalse")
+    let CorrectOption = true
+
+    optionIsCorrectFalse.onclick = function() {
+        if (optionIsCorrectTrue.checked){
+            optionIsCorrectTrue.checked = false
+        }
+        optionIsCorrectFalse.checked = true
+        CorrectOption = false
+    }
+    optionIsCorrectTrue.onclick = function() {
+        if (optionIsCorrectFalse.checked){
+            optionIsCorrectFalse.checked = false
+        }
+        optionIsCorrectTrue.checked = true
+        CorrectOption = true
+    }
+
+    let saveOptionBtn = window.document.getElementById("createOptionBtn")
+    saveOptionBtn.onclick = function (){
+        let opt = window.document.getElementById("questionOptionOption")
+        let explanation = window.document.getElementById("questionOptionExplanation")
+
+        let option = {
+            quiz: null,
+            option: opt.value,
+            explanation: explanation.value,
+            correctOption: CorrectOption
+        }
+
+        quizOptions.push(option)
+
+        let itemText = option.option
+
+        //insert the option into the table
+        if (itemText.trim() !== '') {
+            // Create a new row and two cells
+            var table = document.getElementById('optionTableBody');
+            var newRow = table.insertRow(0); // Insert at the beginning
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+
+            // Set the cell values
+            cell1.innerHTML = itemText;
+            cell2.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
+
+            // Clear the input field
+            option.value = '';
+        } else {
+            alert('Please enter an item.');
+        }
+    }
+
+    let questionIds = [];
+
+    //show createQuestionModal
+    let addQuestionBtn = window.document.getElementById("createQuestionBtn")
+    let questionCreate = window.document.getElementById("createQuestionModal")
+    let spanQuestion = document.getElementById("closeQuestion");
+    addQuestionBtn.onclick = function() {
+        questionCreate.style.display = "block";
+    }
+    // When the user clicks on <span> (x), close the modal
+    spanQuestion.onclick = function() {
+        questionCreate.style.display = "none";
+    }
+
+    //true false pentru multipleChoice
+    let questionIsMultipleChoiceTrue = window.document.getElementById("questionIsMultipleChoiceTrue")
+    let questionIsMultipleChoiceFalse = window.document.getElementById("questionIsMultipleChoiceFalse")
+    let multipleChoice = true
+
+    questionIsMultipleChoiceFalse.onclick = function() {
+        if (questionIsMultipleChoiceTrue.checked){
+            questionIsMultipleChoiceTrue.checked = false
+        }
+        questionIsMultipleChoiceFalse.checked = true
+        multipleChoice = false
+    }
+    questionIsMultipleChoiceTrue.onclick = function() {
+        if (questionIsMultipleChoiceFalse.checked){
+            questionIsMultipleChoiceFalse.checked = false
+        }
+        questionIsMultipleChoiceTrue.checked = true
+        multipleChoice = true
+    }
+
+    function deleteRow(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+    // adaugare question table
+    let questionTable = window.document.getElementById("questionTable")
+    let saveQuestionBtn = window.document.getElementById("saveQuestionBtn")
+    let noQuestions = 0
+    saveQuestionBtn.onclick = function () {
+        let optionElements = window.document.getElementById("optionTable").querySelectorAll("tr td:nth-child(1)")
+        let description = window.document.getElementById("questionCreateDescription")
+        let hint = window.document.getElementById("questionCreateHint")
+
+        let quizEntry = {
+            quiz: null,
+            question: description.value,
+            optionAndExplanation: quizOptions,
+            multipleChoice: multipleChoice,
+            hint: hint.value,
+        }
+
+        console.log(JSON.stringify(quizEntry))
+
+        //POST AJAX /create/question aici
+        $.ajax({
+            url:'/login/create/question',
+            type: 'POST',
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            contentType: 'application/json',
+            data: JSON.stringify(quizEntry),
+            cache: false,
+            success: function (response){
+                questionIds.push(response.id)
+                console.log(questionIds)
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred. Status: " + xhr.status);
+            }
+        });
+
+        let body = document.getElementById("questionTableBody")
+        let row = body.insertRow(body.rows.length)
+        var cell1 = row.insertCell(0)
+        var cell2 = row.insertCell(1)
+        var cell3 = row.insertCell(2)
+        var cell4 = row.insertCell(3)
+        var cell5 = row.insertCell(4)
+        cell1.innerHTML = quizEntry.question
+        cell2.innerHTML = quizEntry.hint
+        cell3.innerHTML = quizEntry.optionAndExplanation.length.toString()
+        cell4.innerHTML = quizEntry.multipleChoice
+        cell5.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
+
+        //eliberare inputuri de completat
+        description.value = ''
+        hint.value = ''
+        let rows = document.getElementById("optionTableBody").querySelectorAll("tr")
+        rows.forEach(function (row){
+            row.parentNode.removeChild(row)
+        })
+
+        //inchidem questionModal
+        questionCreate.style.display = "none"
+
+        quizOptions = []
+        let opt = window.document.getElementById("questionOptionOption")
+        let explanation = window.document.getElementById("questionOptionExplanation")
+        opt.value = ''
+        explanation.value = ''
+
+    }
+
+    // true false pentru seeResult
+    let quizSeeResultTrue = window.document.getElementById("quizSeeResultTrue")
+    let quizSeeResultFalse = window.document.getElementById("quizSeeResultFalse")
+
+    quizSeeResultFalse.onclick = function() {
+        if (quizSeeResultTrue.checked){
+            quizSeeResultTrue.checked = false
+        }
+        quizSeeResultFalse.checked = true
+    }
+    quizSeeResultTrue.onclick = function() {
+        if (quizSeeResultFalse.checked){
+            quizSeeResultFalse.checked = false
+        }
+        quizSeeResultTrue.checked = true
+    }
+
+    var addQuestionToQuiz = document.getElementById("addQuestionBtn")
+    addQuestionToQuiz.onclick = function (){
         let category = document.getElementById("quizCategory")
         let difficulty = document.getElementById("quizDifficulty")
         let timeLimit = document.getElementById("quizTimeLimit")
@@ -524,233 +714,38 @@ refacut dupa ce rezolvam JWT
             cache: false,
             success: function (response){
                 quizId = response.id;
-            },
-            error: function (xhr, status, error) {
-                alert("An error occurred. Status: " + xhr.status);
-            }
-        });
+                for (let index in questionIds){
+                    console.log(questionIds[index]);
 
-    });
-
-    let quizOptions = []
-
-
-    //show createOptionModal
-    let addOptionBtn = window.document.getElementById("addOptionBtn")
-    let optionCreate = window.document.getElementById("createOptionModal")
-    let spanOption = document.getElementById("closeOption");
-    addOptionBtn.onclick = function() {
-        optionCreate.style.display = "block";
-    }
-    // When the user clicks on <span> (x), close the modal
-    spanOption.onclick = function() {
-        optionCreate.style.display = "none";
-    }
-
-    //optionIsCorrect radio buttons
-    let optionIsCorrectTrue = window.document.getElementById("optionIsCorrectTrue")
-    let optionIsCorrectFalse = window.document.getElementById("optionIsCorrectFalse")
-
-    optionIsCorrectFalse.onclick = function() {
-        if (optionIsCorrectTrue.checked){
-            optionIsCorrectTrue.checked = false
-        }
-        optionIsCorrectFalse.checked = true
-    }
-    optionIsCorrectTrue.onclick = function() {
-        if (optionIsCorrectFalse.checked){
-            optionIsCorrectFalse.checked = false
-        }
-        optionIsCorrectTrue.checked = true
-    }
-
-    let saveOptionBtn = window.document.getElementById("createOptionBtn")
-    saveOptionBtn.onclick = function (){
-        let opt = window.document.getElementById("questionOptionOption")
-        let explanation = window.document.getElementById("questionOptionExplanation")
-        let isCorrectOption = window.document.getElementById("optionIsCorrectTrue").checked
-
-        let option = {
-            quiz: null,
-            option: opt.value,
-            explanation: explanation.value,
-            isCorrectOption: isCorrectOption
-        }
-
-        quizOptions.push(option)
-
-        let itemText = option.option
-
-        //insert the option into the table
-        if (itemText.trim() !== '') {
-            // Create a new row and two cells
-            var table = document.getElementById('optionTableBody');
-            var newRow = table.insertRow(0); // Insert at the beginning
-            var cell1 = newRow.insertCell(0);
-            var cell2 = newRow.insertCell(1);
-
-            // Set the cell values
-            cell1.innerHTML = itemText;
-            cell2.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
-
-            // Clear the input field
-            option.value = '';
-        } else {
-            alert('Please enter an item.');
-        }
-    }
-
-
-
-    let questionIds = [];
-
-    //show createQuestionModal
-    let addQuestionBtn = window.document.getElementById("createQuestionBtn")
-    let questionCreate = window.document.getElementById("createQuestionModal")
-    let spanQuestion = document.getElementById("closeQuestion");
-    addQuestionBtn.onclick = function() {
-        questionCreate.style.display = "block";
-    }
-    // When the user clicks on <span> (x), close the modal
-    spanQuestion.onclick = function() {
-        questionCreate.style.display = "none";
-    }
-
-    //true false pentru multipleChoice
-    let questionIsMultipleChoiceTrue = window.document.getElementById("questionIsMultipleChoiceTrue")
-    let questionIsMultipleChoiceFalse = window.document.getElementById("questionIsMultipleChoiceFalse")
-
-    questionIsMultipleChoiceFalse.onclick = function() {
-        if (questionIsMultipleChoiceTrue.checked){
-            questionIsMultipleChoiceTrue.checked = false
-        }
-        questionIsMultipleChoiceFalse.checked = true
-    }
-    questionIsMultipleChoiceTrue.onclick = function() {
-        if (questionIsMultipleChoiceFalse.checked){
-            questionIsMultipleChoiceFalse.checked = false
-        }
-        questionIsMultipleChoiceTrue.checked = true
-    }
-
-    function deleteRow(button) {
-        var row = button.parentNode.parentNode;
-        row.parentNode.removeChild(row);
-    }
-
-    // adaugare question table
-    let questionTable = window.document.getElementById("questionTable")
-    let saveQuestionBtn = window.document.getElementById("saveQuestionBtn")
-    let noQuestions = 0
-    saveQuestionBtn.onclick = function () {
-        let optionElements = window.document.getElementById("optionTable").querySelectorAll("tr td:nth-child(1)")
-        let description = window.document.getElementById("questionCreateDescription")
-        let hint = window.document.getElementById("questionCreateHint")
-        let multipleChoice = window.document.getElementById("questionIsMultipleChoiceTrue")
-
-
-        let quizEntry = {
-            quiz: null,
-            question: description.value,
-            optionAndExplanation: quizOptions,
-            isMultipleChoice: multipleChoice.checked,
-            hint: hint.value,
-        }
-
-        //POST AJAX /create/question aici
-        $.ajax({
-            url:'/login/create/question',
-            type: 'POST',
-            headers: {
-                Authorization: `Bearer ${bearerToken}`
-            },
-            contentType: 'application/json',
-            data: JSON.stringify(quizEntry),
-            cache: false,
-            success: function (response){
-                questionIds.push(response.id)
-                console.log(questionIds)
-            },
-            error: function (xhr, status, error) {
-                alert("An error occurred. Status: " + xhr.status);
-            }
-        });
-
-        //pentru test completeaza tabelul in loc de POST AJAX
-        let body = document.getElementById("questionTableBody")
-        let row = body.insertRow(body.rows.length)
-        var cell1 = row.insertCell(0)
-        var cell2 = row.insertCell(1)
-        var cell3 = row.insertCell(2)
-        var cell4 = row.insertCell(3)
-        var cell5 = row.insertCell(4)
-        cell1.innerHTML = quizEntry.question
-        cell2.innerHTML = quizEntry.hint
-        cell3.innerHTML = quizEntry.optionAndExplanation.toString()
-        cell4.innerHTML = quizEntry.isMultipleChoice
-        cell5.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
-
-
-        //eliberare inputuri de completat
-        description.value = ''
-        hint.value = ''
-        multipleChoice.value = ''
-        let rows = document.getElementById("optionTableBody").querySelectorAll("tr")
-        rows.forEach(function (row){
-            row.parentNode.removeChild(row)
-        })
-
-        //inchidem questionModal
-        questionCreate.style.display = "none"
-    }
-
-    // true false pentru seeResult
-    let quizSeeResultTrue = window.document.getElementById("quizSeeResultTrue")
-    let quizSeeResultFalse = window.document.getElementById("quizSeeResultFalse")
-
-    quizSeeResultFalse.onclick = function() {
-        if (quizSeeResultTrue.checked){
-            quizSeeResultTrue.checked = false
-        }
-        quizSeeResultFalse.checked = true
-    }
-    quizSeeResultTrue.onclick = function() {
-        if (quizSeeResultFalse.checked){
-            quizSeeResultFalse.checked = false
-        }
-        quizSeeResultTrue.checked = true
-    }
-
-
-    var addQuestionToQuiz = document.getElementById("addQuestionBtn")
-    addQuestionToQuiz.onclick = function (){
-        for (var index in questionIds){
-            console.log(questionIds[index]);
-            //POST AJAX  /add/question
-            let requestData = {
-                quizEntryId: questionIds[index],
-                quizId: quizId
-            }
-            $.ajax({
-                url:'/login/add/question',
-                type: 'PUT',
-                headers: {
-                    Authorization: `Bearer ${bearerToken}`
-                },
-                contentType: 'application/json',
-                data: JSON.stringify(requestData),
-                cache: false,
-                success: function (xhr, status, error){
-                    console.log("Added");
-                },
-                error: function (xhr, status, error) {
-                    alert("An error occurred. Status: " + xhr.status);
+                    //POST AJAX  /add/question
+                    let requestData = {
+                        quizEntryId: questionIds[index],
+                        quizId: quizId
+                    }
+                    $.ajax({
+                        url:'/login/add/question',
+                        type: 'PUT',
+                        headers: {
+                            Authorization: `Bearer ${bearerToken}`
+                        },
+                        contentType: 'application/json',
+                        data: JSON.stringify(requestData),
+                        cache: false,
+                        success: function (xhr, status, error){
+                            console.log("Added");
+                        },
+                        error: function (xhr, status, error) {
+                            alert("An error occurred. Status: " + xhr.status);
+                        }
+                    });
                 }
-            });
-        }
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred. Status: " + xhr.status);
+            }
+        });
+
     }
-
-
 
 </script>
 </body>

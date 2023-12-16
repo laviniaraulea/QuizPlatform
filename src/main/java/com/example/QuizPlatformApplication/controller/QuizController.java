@@ -50,11 +50,8 @@ public class QuizController {
 
     @PostMapping("/create/question")
     public @ResponseBody ResponseEntity<?> createQuestion(@RequestBody QuizEntry quizEntry) {
-        System.out.println("intra");
         try {
-            System.out.println("intra2");
             quizService.createQuestion(quizEntry);
-            System.out.println(quizEntry.getQuestion());
             return ResponseEntity.ok(quizEntry);
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

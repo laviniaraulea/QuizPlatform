@@ -68,4 +68,12 @@ public class LogInController {
         model.addAttribute("token", token);
         return "createQuiz";
     }
+
+    @GetMapping("/takeQuiz")
+    public String main3(Model model, HttpSession session){
+        String token = (String) session.getAttribute("token");
+        System.out.println(token);
+        model.addAttribute("token", token);
+        return "takeQuiz";
+    }
 }

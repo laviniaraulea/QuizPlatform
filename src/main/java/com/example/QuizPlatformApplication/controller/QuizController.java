@@ -4,6 +4,7 @@ import com.example.QuizPlatformApplication.controller.dto.EntryQuizDTO;
 import com.example.QuizPlatformApplication.controller.dto.QuizDTO;
 import com.example.QuizPlatformApplication.model.Quiz;
 import com.example.QuizPlatformApplication.model.QuizEntry;
+import com.example.QuizPlatformApplication.model.validator.MyException;
 import com.example.QuizPlatformApplication.service.ServiceException;
 import com.example.QuizPlatformApplication.service.implementation.QuizServiceImpl;
 import com.example.QuizPlatformApplication.service.interfaces.QuizServiceInterface;
@@ -51,8 +52,8 @@ public class QuizController {
             Quiz quiz = new Quiz(userService.getUserByUsername(quizDTO.getUsername_owner()), quizDTO.getCategory(), quizDTO.getDifficulty(),quizDTO.getTimeLimit(),quizDTO.getDescription(),quizDTO.isCanSeeResult(),quizDTO.getPassingScore(),quizDTO.isMinimumScoreRequired());
             quizService.createQuiz(quiz);
             return ResponseEntity.ok(quiz);
-        } catch (ServiceException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (MyException | ServiceException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"message\": \"" + e.getMessage() + "\"}");
         }
     }
 
@@ -61,7 +62,7 @@ public class QuizController {
         try {
             quizService.createQuestion(quizEntry);
             return ResponseEntity.ok(quizEntry);
-        } catch (ServiceException e) {
+        }  catch (MyException | ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -77,7 +78,7 @@ public class QuizController {
             QuizEntry quizEntry = quizService.getQuizEntryById(entryQuizDTO.getQuizEntryId());
             quizService.addQuestionToQuiz(quiz, quizEntry);
             return ResponseEntity.ok(entryQuizDTO);
-        } catch (ServiceException e) {
+        } catch (MyException | ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

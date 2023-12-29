@@ -4,6 +4,8 @@ import com.example.QuizPlatformApplication.controller.dto.AnswerDTO;
 import com.example.QuizPlatformApplication.controller.dto.FailedAndPassDTO;
 import com.example.QuizPlatformApplication.controller.dto.GeneralStatsDTO;
 import com.example.QuizPlatformApplication.model.*;
+import com.example.QuizPlatformApplication.model.validator.MyException;
+import com.example.QuizPlatformApplication.model.validator.Validator;
 import com.example.QuizPlatformApplication.repository.*;
 import com.example.QuizPlatformApplication.service.ServiceException;
 import com.example.QuizPlatformApplication.service.interfaces.QuizServiceInterface;
@@ -17,6 +19,8 @@ import java.util.Optional;
 
 @Service
 public class QuizServiceImpl implements QuizServiceInterface {
+    @Autowired
+    private Validator validator;
     @Autowired
     private QuizRepoInterface quizRepoInterface;
 
@@ -33,19 +37,21 @@ public class QuizServiceImpl implements QuizServiceInterface {
     private QuizOptionRepoInterface quizOptionRepoInterface;
 
     @Override
-    public void createQuiz(Quiz quiz) throws ServiceException {
+    public void createQuiz(Quiz quiz) throws ServiceException, MyException {
         // Validare pentru asigurarea ca quiz-ul nu este null si are toate informatiile necesare
-        if (quiz == null || quiz.getOwner() == null || quiz.getCategory() == null || quiz.getDifficulty() == null) {
-            throw new ServiceException("Invalid quiz. Make sure all the required information is provided.");
-        }
+//        if (quiz == null || quiz.getOwner() == null || quiz.getCategory() == null || quiz.getDifficulty() == null) {
+//            throw new ServiceException("Invalid quiz. Make sure all the required information is provided.");
+//        }
+        validator.validateNewQuiz(quiz);
         quizRepoInterface.save(quiz);
     }
 
     @Override
-    public void createQuestion(QuizEntry quizEntry) throws ServiceException {
-        if (quizEntry == null || quizEntry.getQuestion() == null || quizEntry.getOptionAndExplanation() == null || quizEntry.getHint() == null) {
-            throw new ServiceException("Invalid question. Make sure all the required information is provided.");
-        }
+    public void createQuestion(QuizEntry quizEntry) throws ServiceException, MyException {
+//        if (quizEntry == null || quizEntry.getQuestion() == null || quizEntry.getOptionAndExplanation() == null || quizEntry.getHint() == null) {
+//            throw new ServiceException("Invalid question. Make sure all the required information is provided.");
+//        }
+        validator.validateNewQuestion(quizEntry);
         quizEntryRepoInterface.save(quizEntry);
         for(QuizOptions quizOptions: quizEntry.getOptionAndExplanation()){
             quizOptions.setQuizEntry(quizEntry);
@@ -54,16 +60,17 @@ public class QuizServiceImpl implements QuizServiceInterface {
     }
 
     @Override
-    public void addQuestionToQuiz(Quiz quiz, QuizEntry quizEntry) throws ServiceException {
-        // Validation to ensure quiz and quizEntry are not null
-        if (quiz == null || quizEntry == null) {
-            throw new ServiceException("Invalid quiz or question.");
-        }
-
-        // Validation to ensure the question does not already exist in the quiz
-        if (quiz.getQuizEntries().contains(quizEntry)) {
-            throw new ServiceException("The question already exists in the quiz.");
-        }
+    public void addQuestionToQuiz(Quiz quiz, QuizEntry quizEntry) throws ServiceException, MyException {
+//        // Validation to ensure quiz and quizEntry are not null
+//        if (quiz == null || quizEntry == null) {
+//            throw new ServiceException("Invalid quiz or question.");
+//        }
+//
+//        // Validation to ensure the question does not already exist in the quiz
+//        if (quiz.getQuizEntries().contains(quizEntry)) {
+//            throw new ServiceException("The question already exists in the quiz.");
+//        }
+        validator.validateAddQuestionToQuiz(quiz,quizEntry);
         quiz.getQuizEntries().add(quizEntry);
         quizEntry.setQuiz(quiz);
         quizRepoInterface.save(quiz);

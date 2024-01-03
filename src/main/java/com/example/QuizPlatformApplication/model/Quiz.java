@@ -51,7 +51,7 @@ public class Quiz implements Serializable {
     public Quiz() {
     }
 
-    public Quiz(User owner, QuizCategory category, QuizDifficulty difficulty, int timeLimit, String description, boolean canSeeResult, float passingScore, boolean minimumScoreRequired) {
+    public Quiz(User owner, QuizCategory category, QuizDifficulty difficulty, int timeLimit, String description, boolean canSeeResult, float passingScore, boolean minimumScoreRequired, String title) {
         this.owner = owner;
         this.category = category;
         this.difficulty = difficulty;
@@ -61,5 +61,6 @@ public class Quiz implements Serializable {
         this.passingScore = passingScore;
         this.minimumScoreRequired = minimumScoreRequired;
         this.quizEntries = new ArrayList<>();
+        this.title = title;
     }
 }

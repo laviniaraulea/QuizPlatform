@@ -25,8 +25,9 @@ public class QuizDTO {
     private float passingScore;
 
     private boolean minimumScoreRequired;
+    private String title;
 
-    public QuizDTO(Long id, String username_owner, QuizCategory category, QuizDifficulty difficulty, int timeLimit, String description, boolean canSeeResult, float passingScore, boolean minimumScoreRequired) {
+    public QuizDTO(Long id, String username_owner, QuizCategory category, QuizDifficulty difficulty, int timeLimit, String description, boolean canSeeResult, float passingScore, boolean minimumScoreRequired, String title) {
         this.id = id;
         this.username_owner = username_owner;
         this.category = category;
@@ -36,6 +37,15 @@ public class QuizDTO {
         this.canSeeResult = canSeeResult;
         this.passingScore = passingScore;
         this.minimumScoreRequired = minimumScoreRequired;
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Long getId() {

@@ -2,6 +2,7 @@ package com.example.QuizPlatformApplication.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -43,5 +44,12 @@ public class QuizEntry implements Serializable {
         this.optionAndExplanation = optionAndExplanation;
         this.isMultipleChoice = isMultipleChoice;
         this.hint = hint;
+    }
+
+    @JsonProperty("isMultipleChoice")
+    private String isMultipleChoiceStr;
+
+    public boolean isMultipleChoice() {
+        return Boolean.parseBoolean(isMultipleChoiceStr);
     }
 }

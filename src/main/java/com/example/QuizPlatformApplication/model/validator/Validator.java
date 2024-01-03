@@ -27,9 +27,9 @@ public class Validator {
             errorMessages.add("The passing score must be bigger than 0!");
         }
 
-        if(quiz.getQuizEntries().size() == 0){
-            errorMessages.add("You can not add a quiz without at least one question!");
-        }
+//        if(quiz.getQuizEntries().size() == 0){
+//            errorMessages.add("You can not add a quiz without at least one question!");
+//        }
 
 
         if (!errorMessages.isEmpty()) {
@@ -66,6 +66,7 @@ public class Validator {
             errorMessages.add("You can not add a question without options!");
         }
         for (QuizOptions quizOption : quizEntry.getOptionAndExplanation()) {
+            System.out.println(quizOption.isCorrectOption());
             if (quizOption.isCorrectOption()) {
                 nrCorrectAnswers++;
             }
@@ -78,7 +79,7 @@ public class Validator {
         }
 
         if (nrCorrectAnswers == 0 && !quizEntry.isMultipleChoice()) {
-            errorMessages.add("You must select at least one correct answer!");
+            errorMessages.add("You must select at least one correct answer!" + nrCorrectAnswers + "   " + quizEntry.isMultipleChoice() + "  " + quizEntry.getHint());
         }
 
         if (nrCorrectAnswers < 2 && quizEntry.isMultipleChoice()) {
@@ -93,7 +94,7 @@ public class Validator {
     public void validateAddQuestionToQuiz(Quiz quiz, QuizEntry quizEntry) throws MyException {
         List<String> errorMessages = new ArrayList<>();
 
-        if (quizEntry.getQuiz().getId().equals(quiz.getId())) {
+        if (quizEntry.getQuiz() != null && quizEntry.getQuiz().getId().equals(quiz.getId())) {
             errorMessages.add("The question is already added to the quiz!");
         }
 

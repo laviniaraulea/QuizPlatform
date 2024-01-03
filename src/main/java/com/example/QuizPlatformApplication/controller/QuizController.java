@@ -49,7 +49,7 @@ public class QuizController {
     @PostMapping("/create/quiz")
     public @ResponseBody ResponseEntity<?> createQuiz(@RequestBody QuizDTO quizDTO) {
         try {
-            Quiz quiz = new Quiz(userService.getUserByUsername(quizDTO.getUsername_owner()), quizDTO.getCategory(), quizDTO.getDifficulty(),quizDTO.getTimeLimit(),quizDTO.getDescription(),quizDTO.isCanSeeResult(),quizDTO.getPassingScore(),quizDTO.isMinimumScoreRequired());
+            Quiz quiz = new Quiz(userService.getUserByUsername(quizDTO.getUsername_owner()), quizDTO.getCategory(), quizDTO.getDifficulty(),quizDTO.getTimeLimit(),quizDTO.getDescription(),quizDTO.isCanSeeResult(),quizDTO.getPassingScore(),quizDTO.isMinimumScoreRequired(), quizDTO.getTitle());
             quizService.createQuiz(quiz);
             return ResponseEntity.ok(quiz);
         } catch (MyException | ServiceException e) {
@@ -60,6 +60,8 @@ public class QuizController {
     @PostMapping("/create/question")
     public @ResponseBody ResponseEntity<?> createQuestion(@RequestBody QuizEntry quizEntry) {
         try {
+
+
             quizService.createQuestion(quizEntry);
             return ResponseEntity.ok(quizEntry);
         }  catch (MyException | ServiceException e) {

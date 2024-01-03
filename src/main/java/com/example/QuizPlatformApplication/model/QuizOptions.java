@@ -1,6 +1,7 @@
 package com.example.QuizPlatformApplication.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,6 +25,13 @@ public class QuizOptions implements Serializable {
 
     @Column
     private String explanation;
+
+    @JsonProperty("isCorrectOption")
+    private String isMultipleChoiceStr;
+
+    public boolean isCorrectOption() {
+        return Boolean.parseBoolean(isMultipleChoiceStr);
+    }
 
     @Column
     private boolean isCorrectOption;

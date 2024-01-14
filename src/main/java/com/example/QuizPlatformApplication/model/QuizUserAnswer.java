@@ -7,6 +7,9 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Entity class for the answer in a try of a quiz
+ */
 @Entity
 @Data
 @Table

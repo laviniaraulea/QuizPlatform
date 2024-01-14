@@ -4,9 +4,21 @@ import org.springframework.data.util.Pair;
 
 import java.util.List;
 
+/**
+ * DTO class for correct answers
+ */
 public class CorrectAnswersDTO {
+    /**
+     * Quiz entry id
+     */
     private Long quizEntryId;
+    /**
+     * List of pairs of options and explanations
+     */
     private List<Pair<Long, String>> optionsAndExplanations;
+    /**
+     * List of correct answers ids
+     */
     private List<Long> correctAnswersIds;
 
     public CorrectAnswersDTO(Long quizEntryId, List<Pair<Long, String>> optionsAndExplanations, List<Long> correctAnswersIds) {

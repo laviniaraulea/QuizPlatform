@@ -1,8 +1,20 @@
 package com.example.QuizPlatformApplication.controller.dto;
 
+/**
+ * DTO class for user
+ */
 public class UserDTO {
+    /**
+     * Username
+     */
     private String username;
+    /**
+     * Password
+     */
     private String password;
+    /**
+     * Date of birth
+     */
     private String dateOfBirth;
 
     public UserDTO() {

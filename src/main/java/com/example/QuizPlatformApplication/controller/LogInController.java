@@ -53,6 +53,12 @@ public class LogInController {
         return "register";
     }
 
+    /**
+     * Registers a user
+     * @param user UserDTO object containing the user's data
+     * @return 200 OK - if the user was registered successfully
+     * 400 BAD REQUEST - if the data is invalid
+     */
     @PostMapping("/register")
     public @ResponseBody ResponseEntity<?> registerUser(@RequestBody UserDTO user) {
         String dob = user.getDateOfBirth();

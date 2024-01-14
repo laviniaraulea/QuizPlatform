@@ -8,7 +8,16 @@ import org.springframework.data.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class containing methods to convert objects
+ * to DTO objects and vice versa
+ */
 public class DTOUtils {
+    /**
+     * Converts a QuizEntry object to a QuestionInfoDTO object
+     * @param quizEntry QuizEntry object to be converted
+     * @return QuestionInfoDTO object
+     */
     static public QuestionInfoDTO getQuestionInfoDTO(QuizEntry quizEntry) {
         List<Pair<Long, String>> possibleAnswers = new ArrayList<>();
         for(QuizOptions quizOptions : quizEntry.getOptionAndExplanation()) {
@@ -17,7 +26,12 @@ public class DTOUtils {
         return new QuestionInfoDTO(quizEntry.getId(), quizEntry.isMultipleChoice(), quizEntry.getQuestion(), possibleAnswers);
     }
 
-    static public QuizProgressDTO getFromDTO(QuizProgress quizProgress) {
+    /**
+     * Converts a QuizProgress object to a QuizProgressDTO object
+     * @param quizProgress QuizProgress object to be converted
+     * @return QuizProgressDTO object
+     */
+    static public QuizProgressDTO toDTO(QuizProgress quizProgress) {
         return new QuizProgressDTO(quizProgress.getQuiz().getId(), quizProgress.getQuiz().getOwner().getUsername(), quizProgress.getHasEnded(), quizProgress.getStartTime(), quizProgress.getEndTime(), quizProgress.getScore());
     }
 }

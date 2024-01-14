@@ -5,10 +5,25 @@ import org.springframework.data.util.Pair;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * DTO class for question info
+ */
 public class QuestionInfoDTO implements Serializable {
+    /**
+     * Question id
+     */
     private Long questionId;
+    /**
+     * Boolean value indicating if the question is multiple choice
+     */
     private boolean isMultipleChoice;
+    /**
+     * Question text
+     */
     private String questionText;
+    /**
+     * List of pairs of option ids and question texts
+     */
     private List<Pair<Long, String>> possibleAnswers;
 
     public QuestionInfoDTO(Long questionId, boolean isMultipleChoice, String questionText, List<Pair<Long, String>> possibleAnswers) {

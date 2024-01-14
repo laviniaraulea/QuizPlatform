@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * This class implements the QuizServiceInterface and provides the business logic
@@ -185,12 +183,24 @@ public class QuizServiceImpl implements QuizServiceInterface {
         return new ArrayList<>(quizRepoInterface.findAllByDifficulty(quizDifficulty));
     }
 
+    /**
+     * Returns if the quiz has been started by the user.
+     * @param quiz the quiz to be checked
+     * @param user the user that is taking the quiz
+     * @return true if the quiz has been started by the user, false otherwise
+     */
     @Override
     public boolean isQuizStarted(Quiz quiz, User user) {
         List<QuizProgress> quizProgresses = quizProgressRepoInterface.findByQuizAndUser(quiz, user);
         return quizProgresses.size() != 0 && !quizProgresses.get(quizProgresses.size()-1).getHasEnded();
     }
 
+    /**
+     * Returns the last quiz progress for the user.
+     * @param quiz the quiz to be checked
+     * @param user the user searched
+     * @return the last quiz progress for the user, null if the user hasn't started the quiz
+     */
     @Override
     public QuizProgress getLastQuizProgress(Quiz quiz, User user) {
         List<QuizProgress> quizProgresses = quizProgressRepoInterface.findByQuizAndUser(quiz, user);
@@ -200,6 +210,13 @@ public class QuizServiceImpl implements QuizServiceInterface {
         return quizProgresses.get(quizProgresses.size()-1);
     }
 
+    /**
+     * Starts the quiz for the user.
+     *
+     * @param quiz the quiz to be started
+     * @param user the user that is taking the quiz
+     * @throws ServiceException if the quiz is null, the user is null, the quiz is already started
+     */
     @Override
     public void startQuiz(Quiz quiz, User user) throws ServiceException {
         if (quiz == null || user == null) {
@@ -219,6 +236,14 @@ public class QuizServiceImpl implements QuizServiceInterface {
         quizProgressRepoInterface.save(quizProgress);
     }
 
+    /**
+     * Ends the quiz for the user and calculates the score.
+     *
+     * @param quiz the quiz to be ended
+     * @param user the user that is taking the quiz
+     * @param userAnswers the answers provided by the user
+     * @throws ServiceException if the quiz is null, the user is null, the quiz is not started, the quiz is already ended, the user answers are null or the user answers are invalid
+     */
     @Override
     public void endQuiz(Quiz quiz, User user, List<AnswerDTO> userAnswers) throws ServiceException {
         if(quiz == null || user == null || userAnswers == null) {
@@ -260,8 +285,58 @@ public class QuizServiceImpl implements QuizServiceInterface {
 
         quizProgress.setHasEnded(true);
         quizProgress.setEndTime(endTime);
-        quizProgress.setScore(5.0F); // TODO: calculate score
+        quizProgress.setScore(5.0F); // TODO: use calculateScore(quiz, userAnswers)
         quizProgressRepoInterface.save(quizProgress);
+    }
+
+    /**
+     * Calculates the score of a quiz based on the user's answers;
+     * For every question, if all the correct answers are selected, the user gets 100% of the point;
+     * If the user selects some but not all of the correct answers, the user gets a percent of the point;
+     * If the user selects a wrong answer, the user gets 0 points.
+     *
+     * @param quiz The quiz
+     * @param userAnswers The user's answers
+     * @return The score, 0 if the quiz is not found
+     */
+    private float calculateScore(Quiz quiz, List<AnswerDTO> userAnswers) {
+        int numberOfQuestions = quiz.getQuizEntries().size();
+
+        Map<Long, Float> map = new HashMap<>();
+        for(AnswerDTO answerDTO : userAnswers) {
+            Long questionId = Long.parseLong(answerDTO.getQuestionId());
+            QuizEntry quizEntry;
+            try {
+                quizEntry = getQuizEntryById(questionId);
+            } catch (ServiceException e) {
+                return 0F;
+            }
+
+            Set<Long> correctQuizOptions = new HashSet<>();
+            for (QuizOptions quizOptions : quizEntry.getOptionAndExplanation()) {
+                if (quizOptions.isCorrectOption()) {
+                    correctQuizOptions.add(quizOptions.getId());
+                }
+            }
+
+            Set<Long> userQuizOptions = new HashSet<>();
+            for (String answer : answerDTO.getAnswersIds()) {
+                Long quizOptionId = Long.parseLong(answer);
+                userQuizOptions.add(quizOptionId);
+            }
+
+            if(correctQuizOptions.containsAll(userQuizOptions)) {
+                map.put(questionId, (float) (correctQuizOptions.size() / userQuizOptions.size()));
+            } else {
+                map.put(questionId, 0F);
+            }
+        }
+
+        float score = 0F;
+        for (Map.Entry<Long, Float> entry : map.entrySet()) {
+            score += entry.getValue();
+        }
+        return (score / numberOfQuestions) * 10;
     }
 
     @Override

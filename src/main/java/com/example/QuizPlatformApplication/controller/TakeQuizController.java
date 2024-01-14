@@ -18,16 +18,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for the taking quiz functionality.
+ */
 @Controller
 @RequestMapping("/takequiz")
 @CrossOrigin
 public class TakeQuizController {
+    /**
+     * The quiz service.
+     */
     @Autowired
     private QuizServiceInterface quizService;
 
+    /**
+     * The user service.
+     */
     @Autowired
     private UserServiceInterface userService;
 
+    /**
+     * Returns the number of questions in a quiz.
+     * @param quizId the id of the quiz
+     * @return the number of questions in the quiz
+     */
     @GetMapping("/quiz/{quizId}/question_count")
     public @ResponseBody ResponseEntity<?> getQuizQuestionCount(@PathVariable String quizId) {
         try {
@@ -39,10 +53,17 @@ public class TakeQuizController {
         }
     }
 
+    /**
+     * Returns the list of questions in a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param username the username of the user
+     * @return the list of questions in the quiz
+     * 400 BAD REQUEST if the user is not found or the quiz is not started
+     */
     @GetMapping("/quiz/{quizId}/questions")
     @CrossOrigin(origins="*")
     public @ResponseBody ResponseEntity<?> getQuizQuestions(@PathVariable String quizId, @RequestParam String username) {
-        // TODO: in the future we will verify the identity of the user by using JWT
         try {
             Long quizIdLong = Long.parseLong(quizId);
             Quiz quiz = quizService.getQuizById(quizIdLong);
@@ -67,10 +88,17 @@ public class TakeQuizController {
         }
     }
 
+    /**
+     * Returns the question of a quiz with a specific id.
+     *
+     * @param quizId the id of the quiz
+     * @param questionId the id of the question
+     * @param username the username of the user
+     * @return the question of the quiz with the specific id
+     * 400 BAD REQUEST - if the user is not found or the quiz is not started
+     */
     @GetMapping("/quiz/{quizId}/questions/{questionId}")
     public @ResponseBody ResponseEntity<?> getQuizQuestionOfId(@PathVariable String quizId, @PathVariable String questionId, @RequestParam String username) {
-        // TODO: in the future we will verify the identity of the user by using JWT
-
         try {
             Long quizIdLong = Long.parseLong(quizId);
             Long questionIdLong = Long.parseLong(questionId);
@@ -94,9 +122,16 @@ public class TakeQuizController {
         }
     }
 
+    /**
+     * Request to start the quiz for a specific user.
+     *
+     * @param quizId the id of the quiz
+     * @param username the username of the user
+     * @return 200 OK - if the quiz was started successfully
+     * 400 BAD REQUEST - if the user is not found or the quiz is already started
+     */
     @PostMapping("/quiz/{quizId}/start")
     public @ResponseBody ResponseEntity<?> startQuiz(@PathVariable String quizId, @RequestBody String username) {
-        // TODO: in the future we will verify the identity of the user by using JWT
         try {
             //System.out.println("ok!");
             Long quizIdLong = Long.parseLong(quizId);
@@ -120,9 +155,16 @@ public class TakeQuizController {
         }
     }
 
+    /**
+     * Request to end the quiz for a specific user.
+     * @param quizId the id of the quiz
+     * @param username the username of the user
+     * @param userAnswers the list of answers of the user
+     * @return 200 OK - if the quiz was ended successfully
+     * 400 BAD REQUEST - if the user is not found or the quiz is not started
+     */
     @PostMapping("/quiz/{quizId}/end")
     public @ResponseBody ResponseEntity<?> endQuiz(@PathVariable String quizId, @RequestParam String username, @RequestBody List<AnswerDTO> userAnswers) {
-        // TODO: in the future we will verify the identity of the user by using JWT
         try {
             Long quizIdLong = Long.parseLong(quizId);
             Quiz quiz = quizService.getQuizById(quizIdLong);
@@ -144,9 +186,15 @@ public class TakeQuizController {
         }
     }
 
+    /**
+     * Returns the information about the quiz.
+     * @param quizId the id of the quiz
+     * @param username the username of the user
+     * @return the information about the quiz
+     * 400 BAD REQUEST - if the user is not found or the quiz is not started
+     */
     @GetMapping("/quiz/{quizId}/info")
     public @ResponseBody ResponseEntity<?> getQuizInformation(@PathVariable String quizId, @RequestBody String username) {
-        // TODO: in the future we will verify the identity of the user by using JWT
         try {
             Long quizIdLong = Long.parseLong(quizId);
             Quiz quiz = quizService.getQuizById(quizIdLong);
@@ -167,9 +215,16 @@ public class TakeQuizController {
         }
     }
 
+    /**
+     * Returns the correct answers of a quiz.
+     *
+     * @param quizId the id of the quiz
+     * @param username the username of the user
+     * @return the correct answers of a quiz
+     * 400 BAD REQUEST - if the user is not found
+     */
     @GetMapping("/quiz/{quizId}/answers")
     public @ResponseBody ResponseEntity<?> getQuizCorrectAnswers(@PathVariable String quizId, @RequestParam String username) {
-        // TODO: in the future we will verify the identity of the user by using JWT
         try {
             Long quizIdLong = Long.parseLong(quizId);
             Quiz quiz = quizService.getQuizById(quizIdLong);

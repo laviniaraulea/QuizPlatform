@@ -2,7 +2,6 @@ package com.example.QuizPlatformApplication.controller.dto;
 
 import java.util.List;
 
-// TEMPORARY, WILL BE REMOVED
 public class EndQuizRequest {
     private String username;
     private List<AnswerDTO> userAnswers;

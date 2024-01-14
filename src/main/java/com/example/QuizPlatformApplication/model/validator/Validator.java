@@ -7,9 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ *  Component class responsible for validating Quiz and QuizEntry objects.
+ */
 @Component
 public class Validator {
 
+    /**
+     * Validates a new quiz.
+     * @param quiz The quiz to be validated.
+     * @throws MyException If validation fails, an exception with error messages is thrown.
+     */
     public void validateNewQuiz(Quiz quiz) throws MyException {
         List<String> errorMessages = new ArrayList<>();
 
@@ -27,16 +35,16 @@ public class Validator {
             errorMessages.add("The passing score must be bigger than 0!");
         }
 
-//        if(quiz.getQuizEntries().size() == 0){
-//            errorMessages.add("You can not add a quiz without at least one question!");
-//        }
-
-
         if (!errorMessages.isEmpty()) {
             throw new MyException(String.join("\n", errorMessages));
         }
     }
 
+    /**
+     * Validates a new quiz question (QuizEntry).
+     * @param quizEntry The quiz question to be validated.
+     * @throws MyException If validation fails, an exception with error messages is thrown.
+     */
     public void validateNewQuestion(QuizEntry quizEntry) throws MyException {
         List<String> errorMessages = new ArrayList<>();
 
@@ -46,19 +54,6 @@ public class Validator {
         if (quizEntry.getHint() == null || quizEntry.getHint().equals("")) {
             errorMessages.add("The hint can not be empty!");
         }
-
-
-//        try {
-//            QuizCategory quizCategory = quiz.getCategory();
-//        } catch (Exception e) {
-//            throw new MyException("The category is not valid!", e);
-//        }
-//        try {
-//            QuizDifficulty quizDifficulty = quiz.getDifficulty();
-//        } catch (Exception e) {
-//            throw new MyException("The difficulty is not valid!", e);
-//        }
-
 
         // validate options
         int nrCorrectAnswers = 0;
@@ -91,6 +86,12 @@ public class Validator {
         }
     }
 
+    /**
+     * Validates adding a question to a quiz.
+     * @param quiz The quiz to which the question is being added.
+     * @param quizEntry The quiz question to be added.
+     * @throws MyException If validation fails, an exception with error messages is thrown.
+     */
     public void validateAddQuestionToQuiz(Quiz quiz, QuizEntry quizEntry) throws MyException {
         List<String> errorMessages = new ArrayList<>();
 

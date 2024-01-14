@@ -17,40 +17,65 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class implements the QuizServiceInterface and provides the business logic
+ * for managing quizzes, questions, and user progress in the quiz platform application.
+ */
 @Service
 public class QuizServiceImpl implements QuizServiceInterface {
+    /**
+     * The validator used for input validation.
+     */
     @Autowired
     private Validator validator;
+    /**
+     * The repository for managing Quiz entities.
+     */
     @Autowired
     private QuizRepoInterface quizRepoInterface;
 
+    /**
+     * The repository for managing QuizEntry entities.
+     */
     @Autowired
     private QuizEntryRepoInterface quizEntryRepoInterface;
 
+    /**
+     * The repository for managing quiz progress.
+     */
     @Autowired
     private QuizProgressRepoInterface quizProgressRepoInterface;
 
+    /**
+     * The repository for managing user's answers to the quiz.
+     */
     @Autowired
     private QuizUserAnswerRepoInterface quizUserAnswerRepoInterface;
 
+    /**
+     * The repository for managing QuizOptions entities.
+     */
     @Autowired
     private QuizOptionRepoInterface quizOptionRepoInterface;
 
+    /**
+     * Creates a new quiz.
+     * @param quiz The Quiz object to be created.
+     * @throws MyException If validation of the quiz fails.
+     */
     @Override
-    public void createQuiz(Quiz quiz) throws ServiceException, MyException {
-        // Validare pentru asigurarea ca quiz-ul nu este null si are toate informatiile necesare
-//        if (quiz == null || quiz.getOwner() == null || quiz.getCategory() == null || quiz.getDifficulty() == null) {
-//            throw new ServiceException("Invalid quiz. Make sure all the required information is provided.");
-//        }
+    public void createQuiz(Quiz quiz) throws MyException {
         validator.validateNewQuiz(quiz);
         quizRepoInterface.save(quiz);
     }
 
+    /**
+     * Creates a new quiz entry.
+     * @param quizEntry The QuizEntry object representing the question.
+     * @throws MyException If validation of the question fails.
+     */
     @Override
-    public void createQuestion(QuizEntry quizEntry) throws ServiceException, MyException {
-//        if (quizEntry == null || quizEntry.getQuestion() == null || quizEntry.getOptionAndExplanation() == null || quizEntry.getHint() == null) {
-//            throw new ServiceException("Invalid question. Make sure all the required information is provided.");
-//        }
+    public void createQuestion(QuizEntry quizEntry) throws MyException {
         validator.validateNewQuestion(quizEntry);
         quizEntryRepoInterface.save(quizEntry);
         for(QuizOptions quizOptions: quizEntry.getOptionAndExplanation()){
@@ -59,17 +84,14 @@ public class QuizServiceImpl implements QuizServiceInterface {
         }
     }
 
+    /**
+     * Adds a quiz entry to the specified quiz.
+     * @param quiz The Quiz object to which the quiz entry will be added.
+     * @param quizEntry The QuizEntry object representing the question to be added.
+     * @throws MyException If validation of the quiz entry addition fails.
+     */
     @Override
-    public void addQuestionToQuiz(Quiz quiz, QuizEntry quizEntry) throws ServiceException, MyException {
-//        // Validation to ensure quiz and quizEntry are not null
-//        if (quiz == null || quizEntry == null) {
-//            throw new ServiceException("Invalid quiz or question.");
-//        }
-//
-//        // Validation to ensure the question does not already exist in the quiz
-//        if (quiz.getQuizEntries().contains(quizEntry)) {
-//            throw new ServiceException("The question already exists in the quiz.");
-//        }
+    public void addQuestionToQuiz(Quiz quiz, QuizEntry quizEntry) throws MyException {
         validator.validateAddQuestionToQuiz(quiz,quizEntry);
         quiz.getQuizEntries().add(quizEntry);
         quizEntry.setQuiz(quiz);
@@ -77,6 +99,12 @@ public class QuizServiceImpl implements QuizServiceInterface {
         quizEntryRepoInterface.save(quizEntry);
     }
 
+    /**
+     * Deletes a quiz entry from the specified quiz.
+     * @param quiz The Quiz object from which the quiz entry will be deleted.
+     * @param quizEntry The QuizEntry object representing the question to be deleted.
+     * @throws ServiceException If an error occurs during the deletion process.
+     */
     @Override
     public void deleteQuestionFromQuiz(Quiz quiz, QuizEntry quizEntry) throws ServiceException {
         // Validation to ensure quiz and quizEntry are not null
@@ -92,14 +120,18 @@ public class QuizServiceImpl implements QuizServiceInterface {
         quizRepoInterface.save(quiz);
     }
 
+    /**
+     * Retrieves a Quiz object by its ID.
+     * @param id The ID of the quiz to retrieve.
+     * @return The Quiz object.
+     * @throws ServiceException If the quiz with the specified ID is not found.
+     */
     @Override
     public Quiz getQuizById(Long id) throws ServiceException {
-        // Validare pentru identificatorul null sau negativ
+        // Validation to ensure id is not null or a negative number
         if (id == null || id <= 0) {
             throw new ServiceException("Invalid quiz ID provided.");
         }
-
-        // Cautarea quiz-ului in baza de date
         Optional<Quiz> quizOptional = quizRepoInterface.findById(id);
         if (quizOptional.isPresent()) {
             return quizOptional.get();
@@ -108,14 +140,18 @@ public class QuizServiceImpl implements QuizServiceInterface {
         }
     }
 
+    /**
+     * Retrieves a QuizEntry object by its ID.
+     * @param id The ID of the quiz entry to retrieve.
+     * @return The QuizEntry object.
+     * @throws ServiceException If the quiz entry with the specified ID is not found.
+     */
     @Override
     public QuizEntry getQuizEntryById(Long id) throws ServiceException {
-        // Validare pentru identificatorul null sau negativ
+        // Validation to ensure id is not null or a negative number
         if (id == null || id <= 0) {
             throw new ServiceException("Invalid quiz entry ID provided.");
         }
-
-        // Cautarea intrarii de quiz in baza de date
         Optional<QuizEntry> quizEntryOptional = quizEntryRepoInterface.findById(id);
         if (quizEntryOptional.isPresent()) {
             return quizEntryOptional.get();
@@ -124,6 +160,10 @@ public class QuizServiceImpl implements QuizServiceInterface {
         }
     }
 
+    /**
+     * Retrieves a list of all quizzes.
+     * @return List of Quiz objects.
+     */
     @Override
     public List<Quiz> getAllQuizzes() {
         return quizRepoInterface.findAll();

@@ -69,12 +69,12 @@ public class QuizController {
      * @return ResponseEntity with the created quiz or an error message if creation fails.
      */
     @PostMapping("/create/quiz")
-    public @ResponseBody ResponseEntity<?> createQuiz(@RequestBody QuizDTO quizDTO) {
+    public @ResponseBody ResponseEntity<?> createQuiz(@RequestBody QuizDTO quizDTO) throws MyException {
         try {
             Quiz quiz = new Quiz(userService.getUserByUsername(quizDTO.getUsername_owner()), quizDTO.getCategory(), quizDTO.getDifficulty(),quizDTO.getTimeLimit(),quizDTO.getDescription(),quizDTO.isCanSeeResult(),quizDTO.getPassingScore(),quizDTO.isMinimumScoreRequired(), quizDTO.getTitle());
             quizService.createQuiz(quiz);
             return ResponseEntity.ok(quiz);
-        } catch (MyException | ServiceException e) {
+        } catch (MyException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"message\": \"" + e.getMessage() + "\"}");
         }
     }
@@ -89,7 +89,7 @@ public class QuizController {
         try {
             quizService.createQuestion(quizEntry);
             return ResponseEntity.ok(quizEntry);
-        }  catch (MyException | ServiceException e) {
+        }  catch (MyException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

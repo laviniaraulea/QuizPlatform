@@ -287,6 +287,14 @@
                         </tr>
                         <tr>
                             <td>
+                                <label for="quizTitle">Title </label>
+                            </td>
+                            <td>
+                                <input type="text" class="quiz-create-text" id="quizTitle" name="quiz-title" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 <label for="quizDescription">Description </label>
                             </td>
                             <td>
@@ -526,7 +534,7 @@ refacut dupa ce rezolvam JWT
             quiz: null,
             option: opt.value,
             explanation: explanation.value,
-            correctOption: CorrectOption
+            isCorrectOption: CorrectOption
         }
 
         quizOptions.push(option)
@@ -604,7 +612,7 @@ refacut dupa ce rezolvam JWT
             quiz: null,
             question: description.value,
             optionAndExplanation: quizOptions,
-            multipleChoice: multipleChoice,
+            isMultipleChoice: multipleChoice,
             hint: hint.value,
         }
 
@@ -625,7 +633,8 @@ refacut dupa ce rezolvam JWT
                 console.log(questionIds)
             },
             error: function (xhr, status, error) {
-                alert("An error occurred. Status: " + xhr.status);
+                console.log(JSON.stringify(quizEntry));
+                alert("An error occurred. Status: " + xhr.status + "\nMsg:" + xhr.responseText);
             }
         });
 
@@ -639,7 +648,7 @@ refacut dupa ce rezolvam JWT
         cell1.innerHTML = quizEntry.question
         cell2.innerHTML = quizEntry.hint
         cell3.innerHTML = quizEntry.optionAndExplanation.length.toString()
-        cell4.innerHTML = quizEntry.multipleChoice
+        cell4.innerHTML = quizEntry.isMultipleChoice
         cell5.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
 
         //eliberare inputuri de completat
@@ -688,6 +697,7 @@ refacut dupa ce rezolvam JWT
         let seeResult = document.getElementById("quizSeeResultTrue")
         let description = document.getElementById("quizDescription")
         let minimumScore = document.getElementById("quizMinimumScore")
+        let title = document.getElementById("quizTitle")
         let minimumRequired = false
         if (minimumScore.value){
             minimumRequired = true
@@ -697,12 +707,15 @@ refacut dupa ce rezolvam JWT
             username_owner: username,
             category: category.value,
             difficulty: difficulty.value,
-            timeLimit: timeLimit.value,
+            timeLimit: parseInt(timeLimit.value),
             description: description.value,
             canSeeResult: seeResult.checked,
-            passingScore: minimumScore.value,
-            minimumScoreRequired: minimumRequired
+            passingScore: parseFloat(minimumScore.value) ,
+            minimumScoreRequired: true,
+            title: title.value
         }
+        console.log(parseFloat("100"));
+
 
         $.ajax({
             url:'/quiz/create/quiz',
@@ -736,12 +749,13 @@ refacut dupa ce rezolvam JWT
                             console.log("Added");
                         },
                         error: function (xhr, status, error) {
-                            alert("An error occurred. Status: " + xhr.status);
+                            alert("An error occurred. Status: " + xhr.status + "\nMsg:" + xhr.responseText);
                         }
                     });
                 }
             },
             error: function (xhr, status, error) {
+                console.log( JSON.stringify(quiz))
                 alert("An error occurred. Status: " + xhr.status + "\nMsg:" + xhr.responseText);
             }
         });

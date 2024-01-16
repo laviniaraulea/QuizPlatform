@@ -62,6 +62,7 @@ public class Validator {
         }
         for (QuizOptions quizOption : quizEntry.getOptionAndExplanation()) {
             System.out.println(quizOption.isCorrectOption());
+            System.out.println(quizOption.getIsMultipleChoiceStr());
             if (quizOption.isCorrectOption()) {
                 nrCorrectAnswers++;
             }

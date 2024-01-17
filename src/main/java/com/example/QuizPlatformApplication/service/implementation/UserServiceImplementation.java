@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementation of the UserServiceInterface used in the app
+ */
 @Service
 public class UserServiceImplementation implements UserServiceInterface {
     @Autowired

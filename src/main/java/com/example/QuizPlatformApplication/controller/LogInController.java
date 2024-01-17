@@ -16,14 +16,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+/**
+ * The controller used for request which implicate a user
+ */
 @Controller
 @RequestMapping("/login")
 @CrossOrigin
 public class LogInController {
 
+    /**
+     * The Service used to authenticate a user
+     */
     @Autowired
     private AuthenticationServiceInterface authenticationService;
 
+    /**
+     * The service used ii order to generate an decode tokens
+     */
     @Autowired
     private JwtService jwtService;
 

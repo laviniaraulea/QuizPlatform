@@ -82,7 +82,25 @@ public interface QuizServiceInterface {
 
     void endQuiz(Quiz quiz, User user, List<AnswerDTO> userAnswers) throws ServiceException;
 
+    /**
+     * Returns the general stats for a user
+     * @param user the user
+     * @return the total quizzes created, total quizzes done, average score of the user
+     */
     GeneralStatsDTO getGeneralStats(User user);
+
+    /**
+     * Returns the stats per category for a user
+     * @param user the user
+     * @param category quiz category as string for stats
+     * @return the stats for a specific catefory
+     */
     GeneralStatsDTO getStatsPerCategory(User user, String category);
+
+    /**
+     * Returns the number of Failed Quizzes and the number of Paassed Quizzes for a user
+     * @param user the user
+     * @return  number of Failed Quizzes and number of Paassed Quizzes
+     */
     FailedAndPassDTO getFailedAndPass(User user);
 }

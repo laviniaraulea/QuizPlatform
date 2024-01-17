@@ -12,16 +12,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller for the taking user stats functionality.
+ */
 @Controller
 @RequestMapping("/userStats")
 @CrossOrigin
 public class UserStatsController {
+    /**
+     * The quiz service.
+     */
     @Autowired
     private QuizServiceInterface quizService;
 
+    /**
+     * The user service.
+     */
     @Autowired
     private UserServiceInterface userService;
 
+    /**
+     * Returns the general stats for a user
+     * @param username the username of a user
+     * @return the total quizzes created, total quizzes done, average score of the user
+     */
     @GetMapping("/getGeneralStats")
     public @ResponseBody ResponseEntity<?> getGeneralStats(@RequestParam String username) {
         try {
@@ -36,6 +50,12 @@ public class UserStatsController {
         }
     }
 
+
+    /**
+     * Returns the stats per category for a user
+     * @param data contain the username and category
+     * @return the stats for a specific catefory
+     */
     @PostMapping("/getStatsPerCategory")
     public @ResponseBody ResponseEntity<?> getStatsPerCategory(@RequestBody UsernameCategoryDTO data) {
         try {
@@ -54,6 +74,11 @@ public class UserStatsController {
         }
     }
 
+    /**
+     * Returns the number of Failed Quizzes and the number of Paassed Quizzes for a user
+     * @param username the username of a user
+     * @return  number of Failed Quizzes and number of Paassed Quizzes
+     */
     @GetMapping("/getFailedAndPassStats")
     public @ResponseBody ResponseEntity<?> getFailedAndPass(@RequestParam String username) {
         try {

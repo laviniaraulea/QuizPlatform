@@ -2,8 +2,18 @@ package com.example.QuizPlatformApplication.controller.dto;
 
 import java.io.Serializable;
 
+/**
+ * DTO class for username and category answers
+ */
 public class UsernameCategoryDTO implements Serializable {
+    /**
+     * username of the user as string
+     */
     private String username;
+
+    /**
+     * category of the quiz as string
+     */
     private String category;
 
     public UsernameCategoryDTO() {

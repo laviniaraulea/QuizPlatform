@@ -22,5 +22,11 @@ public interface UserServiceInterface {
      */
     User getUserByUsername(String username);
 
+    /**
+     * Function to add a new user in the database
+     * @param username the username of the user
+     * @param password the password of the user
+     * @param dateOfBirth the date of birth of the user
+     */
     void addUser(String username, String password, LocalDate dateOfBirth);
 }

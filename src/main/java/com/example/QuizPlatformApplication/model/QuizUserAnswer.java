@@ -14,16 +14,28 @@ import java.util.List;
 @Data
 @Table
 public class QuizUserAnswer implements Serializable {
+    /**
+     * Unique identifier for the answer.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Reference to the progress to which this answear belongs.
+     */
     @ManyToOne
     private QuizProgress quizProgress;
 
+    /**
+     * Reference to the Quiz entry to which this answear belongs.
+     */
     @ManyToOne
     private QuizEntry quizEntry;
 
+    /**
+     * List of user's answers for a quiz.
+     */
     @ManyToMany
     private List<QuizOptions> answers;
 

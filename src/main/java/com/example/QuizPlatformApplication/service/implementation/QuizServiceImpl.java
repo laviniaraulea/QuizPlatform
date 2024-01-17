@@ -340,6 +340,11 @@ public class QuizServiceImpl implements QuizServiceInterface {
         return (score / numberOfQuestions) * 10;
     }
 
+    /**
+     * Returns the general stats for a user
+     * @param user the user
+     * @return the total quizzes created, total quizzes done, average score of the user
+     */
     @Override
     public GeneralStatsDTO getGeneralStats(User user) {
         long totalQuizzesDone = quizProgressRepoInterface.countAllByUserAndHasEnded(user, true);
@@ -356,6 +361,12 @@ public class QuizServiceImpl implements QuizServiceInterface {
         return new GeneralStatsDTO(totalQuizzesCreated, totalQuizzesDone, average);
     }
 
+    /**
+     * Returns the stats per category for a user
+     * @param user the user
+     * @param category quiz category as string for stats
+     * @return the stats for a specific catefory
+     */
     @Override
     public GeneralStatsDTO getStatsPerCategory(User user, String category) {
         long totalQuizzesDone = quizProgressRepoInterface.countAllByUserAndHasEndedAndQuizCategory(user, true, QuizCategory.valueOf(category));
@@ -374,6 +385,11 @@ public class QuizServiceImpl implements QuizServiceInterface {
 
     }
 
+    /**
+     * Returns the number of Failed Quizzes and the number of Paassed Quizzes for a user
+     * @param user the user
+     * @return  number of Failed Quizzes and number of Paassed Quizzes
+     */
     @Override
     public FailedAndPassDTO getFailedAndPass(User user) {
         long noFailedQuizzes = 0;

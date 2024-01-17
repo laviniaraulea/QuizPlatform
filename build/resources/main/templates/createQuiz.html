@@ -649,12 +649,25 @@ refacut dupa ce rezolvam JWT
             cache: false,
             success: function (response){
                 questionIds.push(response.id)
-                let body = document.getElementById("questionTableBody");
-                let row = body.insertRow(body.rows.length);
-                row.setAttribute('data-question-id', response.id);
-                var questionId = row.getAttribute('data-question-id');
+                // let body = document.getElementById("questionTableBody");
+                // let row = body.insertRow(body.rows.length);
+
+                // var questionId = row.getAttribute('data-question-id');
                 // console.log(questionId)
                 // console.log(questionIds)
+                let body = document.getElementById("questionTableBody")
+                let row = body.insertRow(body.rows.length)
+                row.setAttribute('data-question-id', response.id);
+                var cell1 = row.insertCell(0)
+                var cell2 = row.insertCell(1)
+                var cell3 = row.insertCell(2)
+                var cell4 = row.insertCell(3)
+                var cell5 = row.insertCell(4)
+                cell1.innerHTML = quizEntry.question
+                cell2.innerHTML = quizEntry.hint
+                cell3.innerHTML = quizEntry.optionAndExplanation.length.toString()
+                cell4.innerHTML = quizEntry.isMultipleChoice
+                cell5.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
             },
             error: function (xhr, status, error) {
                 console.log(JSON.stringify(quizEntry));
@@ -662,18 +675,7 @@ refacut dupa ce rezolvam JWT
             }
         });
 
-        let body = document.getElementById("questionTableBody")
-        let row = body.insertRow(body.rows.length)
-        var cell1 = row.insertCell(0)
-        var cell2 = row.insertCell(1)
-        var cell3 = row.insertCell(2)
-        var cell4 = row.insertCell(3)
-        var cell5 = row.insertCell(4)
-        cell1.innerHTML = quizEntry.question
-        cell2.innerHTML = quizEntry.hint
-        cell3.innerHTML = quizEntry.optionAndExplanation.length.toString()
-        cell4.innerHTML = quizEntry.isMultipleChoice
-        cell5.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
+
         // cell5.setAttribute('data-question-id', response.id);
 
         //eliberare inputuri de completat

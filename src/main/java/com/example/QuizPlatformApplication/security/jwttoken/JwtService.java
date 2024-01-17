@@ -15,24 +15,36 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class used for managing the tokens
+ */
 @Service
 public class JwtService {
 
+    /**
+     * The secret key used by the app to generate and decode tokens
+     */
+    @Value("${token.signing.key}")
+    private String jwtSigningKey;
 
-        @Value("${token.signing.key}")
-        private String jwtSigningKey;
-
-        public String extractUserName(String token) {
+    /**
+     * Function to extract the username from the token
+     * @param token the token extracted from the request
+     * @return the username decoded from the token
+     */
+    public String extractUserName(String token) {
             return extractClaim(token, Claims::getSubject);
         }
 
 
-        public String extractUserEmail(String token) {
-            return extractClaim(token, "email");
-        }
-
-
-        private <T> T extractClaim(String token, String claimName) {
+    /**
+     * Function to extract a cerain information from the token
+     * @param token the token from which we want to extract information
+     * @param claimName the name of the information stored in the token
+     * @return the information stored in the token
+     * @param <T> the type of the information stored
+     */
+    private <T> T extractClaim(String token, String claimName) {
             final Claims claims = Jwts.parserBuilder()
                     .setSigningKey(jwtSigningKey)
                     .build()
@@ -41,27 +53,46 @@ public class JwtService {
             return (T) claims.get(claimName);
         }
 
-        public String generateToken(User userDetails) {
+    /**
+     * function used to generate a new token
+     * @param userDetails the user from whom we want to generate a new token
+     * @return the token created
+     */
+    public String generateToken(User userDetails) {
             return generateToken(new HashMap<>(), userDetails);
         }
 
-
-        public boolean isTokenValid(String token, User user) {
+    /**
+     * C\Function to check if a token is valid
+     * @param token the token we want to check
+     * @param user the user from whom the request came from
+     * @return true if the token is still valid, else false
+     */
+    public boolean isTokenValid(String token, User user) {
             final String userName = extractUserName(token);
             return (userName.equals(user.getUsername())) && !isTokenExpired(token);
         }
 
 
-        public boolean validateToken(String token) {
-            return false;
-        }
-
-        private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
+    /**
+     * Function used to extract a claim from the token
+     * @param token the token we want to extract a claim from
+     * @param claimsResolvers the function used to extract the claim
+     * @return the claim extracted from the token
+     * @param <T> the type of the claim
+     */
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
             final Claims claims = extractAllClaims(token);
             return claimsResolvers.apply(claims);
         }
 
-        private String generateToken(Map<String, Object> extraClaims, User user) {
+    /**
+     * Intermediate function used to generate tokens
+     * @param extraClaims The claims we want to add to the token as a map of type (claim, type)
+     * @param user the user from whom we crate a new token
+     * @return the token in a string format
+     */
+    private String generateToken(Map<String, Object> extraClaims, User user) {
 
             extraClaims.put("username", user.getUsername());
             return Jwts.builder().setClaims(extraClaims).setSubject(user.getUsername())
@@ -70,20 +101,39 @@ public class JwtService {
                     .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
         }
 
-        private boolean isTokenExpired(String token) {
+    /**
+     * Function to check if the date from the token is still valid based on the parameters of the application
+     * @param token the token we want to check if is still valid
+     * @return true if is still valid, else false
+     */
+    private boolean isTokenExpired(String token) {
             return extractExpiration(token).before(new Date());
         }
 
-        private Date extractExpiration(String token) {
+    /**
+     * Function to extract the expiration fate from the token
+     * @param token the token from which we want to extract the expiration date
+     * @return the expiartion date from the token after decode
+     */
+    private Date extractExpiration(String token) {
             return extractClaim(token, Claims::getExpiration);
         }
 
-        private Claims extractAllClaims(String token) {
+    /**
+     * Function used to extract all the claims from a token
+      * @param token the token from which we want to extract the token
+     * @return the claims found
+     */
+    private Claims extractAllClaims(String token) {
             return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
                     .getBody();
         }
 
-        private Key getSigningKey() {
+    /**
+     * Function to get the secret key uset to encode
+     * @return the Key used for encoding
+     */
+    private Key getSigningKey() {
             byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
             return Keys.hmacShaKeyFor(keyBytes);
         }

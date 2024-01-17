@@ -272,7 +272,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <label>See Rezult </label>
+                                <label>See result </label>
                             </td>
                             <td>
                                 <label style="width: 44%; height: 70%; background-color: #2980b9">
@@ -282,6 +282,21 @@
                                 <label style="width: 44%; height: 70%; background-color: #2980b9">
                                     <input type="radio" class="quiz-create-checkbox" id="quizSeeResultFalse"/>
                                     <span>False</span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>Minimum score required </label>
+                            </td>
+                            <td>
+                                <label style="width: 44%; height: 70%; background-color: #2980b9">
+                                    <input type="radio" class="quiz-create-checkbox" id="quizMinScoreTrue"/>
+                                    <span>Yes</span>
+                                </label>
+                                <label style="width: 44%; height: 70%; background-color: #2980b9">
+                                    <input type="radio" class="quiz-create-checkbox" id="quizMinScoreFalse"/>
+                                    <span>No</span>
                                 </label>
                             </td>
                         </tr>
@@ -322,7 +337,9 @@
                             <th data-field="hint" data-valign="middle" data-align="center" data-formatter="hintFormatter">Hint</th>
                             <th data-field="options" data-valign="middle" data-align="center" data-formatter="optionsFormatter">Options</th>
                             <th data-field="multipleChoice" data-valign="middle" data-align="center" data-formatter="multipleChoiceFormatter">Multiple Choice</th>
-                            <th data-field="remove-option" data-valign="middle" data-align="center">X</th>
+                            <td data-field="remove-option" data-valign="middle" data-align="center">
+                                <button class="btn" onclick="deleteRow(this)">X</button>
+                            </td>
                         </tr>
                         </thead>
                         <tbody id = "questionTableBody">
@@ -349,7 +366,7 @@
                             <table id="questionDetailTbl" style="margin: auto">
                                 <tr>
                                     <td>
-                                        <label for="questionCreateDescription">Desctiption</label>
+                                        <label for="questionCreateDescription">Description</label>
                                     </td>
                                     <td>
                                         <input type="text" class="quiz-create-text" id="questionCreateDescription"/>
@@ -486,6 +503,8 @@ refacut dupa ce rezolvam JWT
     //iau jws din cookie
     let bearerToken = localStorage.getItem('token')
 
+    let quizId
+
     let doneBtn = document.getElementById("doneBtn")
     doneBtn.onclick = function (){
         window.location.href = "/login/mainPage"
@@ -594,10 +613,10 @@ refacut dupa ce rezolvam JWT
         multipleChoice = true
     }
 
-    function deleteRow(button) {
-        var row = button.parentNode.parentNode;
-        row.parentNode.removeChild(row);
-    }
+    // function deleteRow(button) {
+    //     var row = button.parentNode.parentNode;
+    //     row.parentNode.removeChild(row);
+    // }
 
     // adaugare question table
     let questionTable = window.document.getElementById("questionTable")
@@ -630,7 +649,12 @@ refacut dupa ce rezolvam JWT
             cache: false,
             success: function (response){
                 questionIds.push(response.id)
-                console.log(questionIds)
+                let body = document.getElementById("questionTableBody");
+                let row = body.insertRow(body.rows.length);
+                row.setAttribute('data-question-id', response.id);
+                var questionId = row.getAttribute('data-question-id');
+                // console.log(questionId)
+                // console.log(questionIds)
             },
             error: function (xhr, status, error) {
                 console.log(JSON.stringify(quizEntry));
@@ -650,6 +674,7 @@ refacut dupa ce rezolvam JWT
         cell3.innerHTML = quizEntry.optionAndExplanation.length.toString()
         cell4.innerHTML = quizEntry.isMultipleChoice
         cell5.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
+        // cell5.setAttribute('data-question-id', response.id);
 
         //eliberare inputuri de completat
         description.value = ''
@@ -670,6 +695,36 @@ refacut dupa ce rezolvam JWT
 
     }
 
+    function deleteRow(button) {
+        var row = button.closest('tr');
+        var questionId = row.getAttribute('data-question-id'); // You need to set a unique identifier for each row, like data-question-id
+        let requestData = {
+            quizEntryId: questionId,
+            quizId: quizId
+        }
+        // Initiate AJAX call to delete the row with the questionId
+        $.ajax({
+            url: '/quiz/delete/question',
+            type: 'PUT',
+            headers: {
+                Authorization: `Bearer ${bearerToken}`
+            },
+            contentType: 'application/json',
+            data: JSON.stringify(requestData),
+            cache: false,
+
+            success: function (response) {
+                // Handle success
+                row.remove(); // Remove the row from the table on success
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                alert("An error occurred. Status: " + xhr.status + "\nMsg:" + xhr.responseText);
+            }
+        });
+    }
+
+
     // true false pentru seeResult
     let quizSeeResultTrue = window.document.getElementById("quizSeeResultTrue")
     let quizSeeResultFalse = window.document.getElementById("quizSeeResultFalse")
@@ -687,6 +742,38 @@ refacut dupa ce rezolvam JWT
         quizSeeResultTrue.checked = true
     }
 
+    let quizMinScoreTrue = document.getElementById("quizMinScoreTrue");
+    let quizMinScoreFalse = document.getElementById("quizMinScoreFalse");
+
+    quizMinScoreFalse.onclick = function () {
+        isMinScoreRequired = quizMinScoreFalse.checked;
+        if (quizMinScoreTrue.checked) {
+            quizMinScoreTrue.checked = false;
+        }
+    };
+    quizMinScoreTrue.onclick = function () {
+        isMinScoreRequired = quizMinScoreTrue.checked;
+        if (quizMinScoreFalse.checked) {
+            quizMinScoreFalse.checked = false;
+        }
+    };
+
+    // Default value or initial state
+    let isMinScoreRequired = false;
+
+    // Use isMinScoreRequired where you need it in your code
+
+    if (quizMinScoreTrue.checked) {
+        isMinScoreRequired = true;
+    } else if (quizMinScoreFalse.checked) {
+        isMinScoreRequired = false;
+    } else {
+        // Handle the case when neither radio button is checked
+        isMinScoreRequired = false; // or set it to a default value
+    }
+
+
+
     let username = localStorage.getItem('username')
 
     var addQuestionToQuiz = document.getElementById("addQuestionBtn")
@@ -698,10 +785,10 @@ refacut dupa ce rezolvam JWT
         let description = document.getElementById("quizDescription")
         let minimumScore = document.getElementById("quizMinimumScore")
         let title = document.getElementById("quizTitle")
-        let minimumRequired = false
-        if (minimumScore.value){
-            minimumRequired = true
-        }
+        let minimumRequired = document.getElementById("quizMinScoreTrue");
+        // if (minimumScore.value){
+        //     minimumRequired = true
+        // }
 
         let quiz = {
             username_owner: username,
@@ -711,10 +798,9 @@ refacut dupa ce rezolvam JWT
             description: description.value,
             canSeeResult: seeResult.checked,
             passingScore: parseFloat(minimumScore.value) ,
-            minimumScoreRequired: true,
+            minimumScoreRequired: isMinScoreRequired,
             title: title.value
         }
-        console.log(parseFloat("100"));
 
 
         $.ajax({

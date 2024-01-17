@@ -115,6 +115,7 @@ public class QuizServiceImpl implements QuizServiceInterface {
             throw new ServiceException("The question does not exist in the quiz.");
         }
         quiz.getQuizEntries().remove(quizEntry);
+        quizEntry.setQuiz(null);
         quizRepoInterface.save(quiz);
     }
 

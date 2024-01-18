@@ -99,6 +99,7 @@
     <div id="form-container"></div>
     <div id="quizQuestionContainer"></div>
     <div id="quizResultsContainer"></div>
+    <div id="timer">00:00</div>
 
 
     <!-- Example button with dynamically assigned ID -->
@@ -120,6 +121,10 @@
 
     let questionContainers;
     let currentQuestionId = null;
+    let quizStartTime;
+    let timerInterval;
+    let remainingTimeInSeconds;
+    let timeLimit; // Declare timeLimit globally
 
     $.ajax({
 
@@ -133,6 +138,45 @@
         cache: false,
         success: function () {
             //alert("Quiz Started!");
+            initializeTimer();
+
+            $.ajax({
+                url: `/quiz/get/quizzes`,
+                type: 'GET',
+                //contentType:'text/plain',
+                //dataType:'application/json',
+                //processData: false,
+                headers: {
+                    Authorization: `Bearer ${bearerToken}`
+                },
+                //data: {username:username},
+                ///cache: false,
+
+                success: function (response) {
+
+                    let quizDetails = null;
+
+                    for (let i = 0; i < response.length; i++) {
+
+                        if (response[i].id == quizId) {
+
+                            quizDetails = response[i];
+                            break;
+                        }
+                    }
+
+                    if (quizDetails) {
+                        timeLimit = quizDetails.timeLimit;
+                        startTimer();
+                    } else {
+                        console.error("Quiz details not found for quizId: " + quizId);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert("An error occurred. Status: " + xhr.responseText);
+                }
+            });
+
             $.ajax({
                 url: `/takequiz/quiz/${quizId}/questions`,
                 type: 'GET',
@@ -153,6 +197,7 @@
                     generateForm((questions))
 
 
+
                 },
                 error: function (xhr, status, error) {
                     alert("An error occurred. Status: " + xhr.responseText);
@@ -164,6 +209,105 @@
             alert("An error occurred. Status: " + xhr.status);
         }
     });
+
+
+    let quizEnded = false;
+    let timerId;
+    function startTimer() {
+        if (quizEnded) {
+            return;
+        }
+
+        const currentTime = new Date().getTime();
+        endTime = currentTime + timeLimit * 60 * 1000; // Update endTime here
+
+        // Call updateTimerDisplay immediately to avoid delay in displaying the initial time
+        updateTimerDisplay();
+
+    }
+
+    function saveAndEndQuiz2() {
+
+        // Check if all questions have been answered
+
+        const userAnswers = Array.from({ length: questions.length }, () => ({ answersIds: [] }));
+        const allQuestionsAnswered = userAnswers.every(answers => answers.answersIds.length > 0);
+
+        if (!allQuestionsAnswered) {
+            // If not all questions are answered, you may choose to handle this scenario differently
+            console.log("Not all questions are answered. Quiz will not be submitted.");
+            clearTimeout(timerId); // Clear the timer interval
+            hideUnnecessaryElements();
+            return;
+        }
+
+
+        console.log('Quiz Ended!');
+        console.log(userAnswers);
+
+        // Send user answers to the server using an AJAX request
+        // You may need to customize this part based on your server-side logic
+        $.ajax({
+            url: `/takequiz/quiz/${quizId}/end?username=${username}`,
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(userAnswers.map((answers, i) => ({
+                questionId: questions[i].questionId,
+                answersIds: answers.answersIds.map(String)
+            }))),
+            success: function (response) {
+                console.log("Answers submitted successfully:", response);
+                fetchCorrectAnswers();
+
+                // Clear the timer interval when the quiz ends
+                clearTimeout(timerId);
+
+                // Hide unnecessary elements
+                hideUnnecessaryElements();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error submitting answers:", error);
+
+                // In case of an error, still clear the timer interval and hide unnecessary elements
+                clearTimeout(timerId);
+                hideUnnecessaryElements();
+            }
+        });
+    }
+
+
+    function updateTimerDisplay() {
+        const timerContainer = document.getElementById('timer');
+        const remainingTime = endTime - new Date().getTime();
+
+        if (remainingTime <= 0&& remainingTime>-1000) {
+            console.log("Quiz time is up!");
+            clearTimeout(timerId)
+            // Call saveAndEndQuiz2 directly when the time is up
+            saveAndEndQuiz2();
+        } else {
+            if(remainingTime<=-1000){return}
+            const minutes = Math.floor(remainingTime / (1000 * 60));
+            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+            timerContainer.innerHTML = `${padZero(minutes)}:${padZero(seconds)}`;
+        }
+        timerId = setTimeout(updateTimerDisplay,1000);
+    }
+
+
+    function initializeTimer() {
+        quizStartTime = new Date().getTime();
+        remainingTimeInSeconds = timeLimit * 60;
+        startTimer();
+    }
+
+    // Function to update the timer display
+
+
+
+    function padZero(value) {
+        return value < 10 ? `0${value}` : value;
+    }
 
 
     function generateForm(questions) {
@@ -199,12 +343,13 @@
 
         // Function to save answers and end the quiz
         function saveAndEndQuiz() {
+            endTime=-1000;
             // Perform actions when the quiz ends (e.g., submit the quiz)
             console.log('Quiz Ended!');
             console.log(userAnswers);
 
             // Send user answers to the server using an AJAX request
-            // You may need to customize this part based on your server-side logic
+
             $.ajax({
                 url: `/takequiz/quiz/${quizId}/end?username=${username}`,
                 type: "POST",
@@ -216,15 +361,23 @@
                 success: function (response) {
                     console.log("Answers submitted successfully:", response);
                     fetchCorrectAnswers();
+
+
+
+
+                    // Hide unnecessary elements
+                    hideUnnecessaryElements();
                 },
                 error: function (xhr, status, error) {
                     console.error("Error submitting answers:", error);
+
+                    // In case of an error, still clear the timer interval and hide unnecessary elements
+                    clearTimeout(timerId);
+                    hideUnnecessaryElements();
                 }
             });
-
-            // Hide unnecessary elements
-            hideUnnecessaryElements();
         }
+
 
         questions.forEach((question, index) => {
             const questionDiv = document.createElement("div");
@@ -301,8 +454,6 @@
 
 
 
-
-
     function fetchQuestionDetails(questionId) {
         return $.ajax({
             url: `/takequiz/quiz/${quizId}/questions/${questionId}?username=${username}`,
@@ -318,7 +469,7 @@
     }
 
 
-    // Function to get the correct option text for a question
+
     // Function to get the correct option text for a question
     function getCorrectOptionText(questionDetails, optionId) {
         const possibleAnswers = questionDetails.possibleAnswers;
@@ -391,6 +542,9 @@
         const submitQuizBtn = document.getElementById('submitQuizBtn');
         submitQuizBtn.style.display = 'none';
     }
+
+
+
 
 
 

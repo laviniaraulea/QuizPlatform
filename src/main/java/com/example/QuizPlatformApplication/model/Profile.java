@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * Entity class representing a profile in the Quiz Platform Application.
+ *  Entity class representing a profile in the Quiz Platform Application.
  */
 @Entity
 @Data

@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * Entity class representing a progress in the Quiz Platform Application.
+ * Entity class representing progress in the Quiz Platform Application.
  */
 @Entity
 @Data

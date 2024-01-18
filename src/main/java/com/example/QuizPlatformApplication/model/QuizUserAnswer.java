@@ -22,13 +22,13 @@ public class QuizUserAnswer implements Serializable {
     private Long id;
 
     /**
-     * Reference to the progress to which this answear belongs.
+     * Reference to the progress to which this answer belongs.
      */
     @ManyToOne
     private QuizProgress quizProgress;
 
     /**
-     * Reference to the Quiz entry to which this answear belongs.
+     * Reference to the Quiz entry to which this answer belongs.
      */
     @ManyToOne
     private QuizEntry quizEntry;

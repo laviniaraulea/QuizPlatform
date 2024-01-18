@@ -113,7 +113,7 @@ public class JwtService {
     /**
      * Function to extract the expiration fate from the token
      * @param token the token from which we want to extract the expiration date
-     * @return the expiartion date from the token after decode
+     * @return the expiration date from the token after decode
      */
     private Date extractExpiration(String token) {
             return extractClaim(token, Claims::getExpiration);
@@ -130,7 +130,7 @@ public class JwtService {
         }
 
     /**
-     * Function to get the secret key uset to encode
+     * Function to get the secret key used to encode
      * @return the Key used for encoding
      */
     private Key getSigningKey() {

@@ -25,7 +25,7 @@ public enum QuizCategory {
      */
     ART_AND_ARTISTS,
     /**
-     * Famous personalities category.
+     * Famous personalities' category.
      */
     FAMOUS_PERSONALITIES,
     /**

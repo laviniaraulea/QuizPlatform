@@ -85,7 +85,7 @@ public class TokenFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Method which marks the endpoins which don't need to be checked such as /login
+     * Method which marks the endpoints which don't need to be checked such as /login
      * @param request current HTTP request
      * @return true if the endpoint is in the path, else false
      */

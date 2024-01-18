@@ -31,7 +31,7 @@ public class UserServiceImplementation implements UserServiceInterface {
     }
 
     /**
-     * Function to get a user by it's username parameter
+     * Function to get a user by its username parameter
      * @param username the username we search in the database
      * @return User and it's details from the database
      */

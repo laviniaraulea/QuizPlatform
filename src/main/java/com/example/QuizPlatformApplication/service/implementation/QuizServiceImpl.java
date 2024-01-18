@@ -293,7 +293,7 @@ public class QuizServiceImpl implements QuizServiceInterface {
     /**
      * Calculates the score of a quiz based on the user's answers;
      * For every question, if all the correct answers are selected, the user gets 100% of the point;
-     * If the user selects some but not all of the correct answers, the user gets a percent of the point;
+     * If the user selects some but not all the correct answers, the user gets a percent of the point;
      * If the user selects a wrong answer, the user gets 0 points.
      *
      * @param quiz The quiz
@@ -365,7 +365,7 @@ public class QuizServiceImpl implements QuizServiceInterface {
      * Returns the stats per category for a user
      * @param user the user
      * @param category quiz category as string for stats
-     * @return the stats for a specific catefory
+     * @return the stats for a specific category
      */
     @Override
     public GeneralStatsDTO getStatsPerCategory(User user, String category) {
@@ -386,9 +386,9 @@ public class QuizServiceImpl implements QuizServiceInterface {
     }
 
     /**
-     * Returns the number of Failed Quizzes and the number of Paassed Quizzes for a user
+     * Returns the number of Failed Quizzes and the number of Passed Quizzes for a user
      * @param user the user
-     * @return  number of Failed Quizzes and number of Paassed Quizzes
+     * @return  number of Failed Quizzes and number of Passed Quizzes
      */
     @Override
     public FailedAndPassDTO getFailedAndPass(User user) {

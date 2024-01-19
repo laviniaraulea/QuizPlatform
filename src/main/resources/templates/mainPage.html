@@ -117,6 +117,10 @@
             background-color: #3498db;
             margin-top: 20px;
         }
+        .btn-logout{
+            background-color: #27ae60;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -175,6 +179,7 @@
     <div class="create-quiz-button">
         <button id="createQuizBtn" class="btn btn-create-quiz">Create Quiz</button>
         <button id="seeStatistics" class="btn btn-see-stats">See statistics</button>
+        <button id="logout" class="btn btn-logout">Logout</button>
     </div>
 </div>
 
@@ -192,8 +197,9 @@
     const difficultyDdlRef = $("#difficultyDdl");
     const categoryDdlRef = $("#categoryDdl");
     let bearerToken = /*[[${token}]]*/ 'default'; // De asta am nevoie, altfel nu am autorizatie sa fac API request-uri
-    const createQuizBtnRef = $("#createQuizBtn")
-    const seeStatisticsBtn = $("#seeStatistics")
+    const createQuizBtnRef = $("#createQuizBtn");
+    const seeStatisticsBtn = $("#seeStatistics");
+    const logoutBtn = $("#logout");
 
     $(document).ready(function () {
         $('#table-id').on('click', '.btn-take-quiz', function () {
@@ -416,5 +422,8 @@
     });
     seeStatisticsBtn.click(function (){
         window.location.href = '/login/userStats'
-    })
+    });
+    logoutBtn.click(function (){
+        window.location.href = '/login'
+    });
 </script>

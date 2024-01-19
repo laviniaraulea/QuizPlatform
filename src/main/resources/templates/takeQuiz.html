@@ -513,24 +513,24 @@
                         entryDiv.appendChild(optionParagraph);
                     });
 
-                    // add button to main page
-
-                    const mainPageButton = document.createElement("button");
-                    mainPageButton.className = "btn-next";
-                    mainPageButton.innerText = "Go to main page";
-
-                    // Add an event listener for the "Next" button
-                    mainPageButton.addEventListener('click', () => {
-                        window.location.href = "/login/mainPage";
-                    });
-
-                    entryDiv.appendChild(mainPageButton);
-
                     const hrElement = document.createElement('hr');
                     entryDiv.appendChild(hrElement);
 
                     quizResultsContainer.appendChild(entryDiv);
                 }
+
+                // add button to main page
+
+                const mainPageButton = document.createElement("button");
+                mainPageButton.className = "btn-next";
+                mainPageButton.innerText = "Go to main page";
+
+                // Add an event listener for the "Next" button
+                mainPageButton.addEventListener('click', () => {
+                    window.location.href = "/login/mainPage";
+                });
+
+                quizResultsContainer.appendChild(mainPageButton);
 
                 // Display the total number of correct answers out of the total number of questions
 

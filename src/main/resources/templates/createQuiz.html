@@ -576,7 +576,7 @@
 
             // Set the cell values
             cell1.innerHTML = itemText;
-            cell2.innerHTML = '<button class="btn" onclick="deleteRow(this)">X</button>';
+            cell2.innerHTML = '<button class="btn" onclick="deleteRowFromOptions(this)">X</button>';
 
             // Clear the input field
             option.value = '';
@@ -623,6 +623,24 @@
     //     var row = button.parentNode.parentNode;
     //     row.parentNode.removeChild(row);
     // }
+
+    // function deleteRowFromOptions(button){
+    //     var row = button.parentNode.parentNode;
+    //     row.parentNode.removeChild(row);
+    // }
+
+    function deleteRowFromOptions(button) {
+        var row = button.parentNode.parentNode;
+        var optionIndex = Array.from(row.parentNode.children).indexOf(row);
+
+        // Remove the corresponding option from the quizOptions array
+        quizOptions.splice(optionIndex, 1);
+
+        // Remove the row from the table
+        row.parentNode.removeChild(row);
+    }
+
+
 
     // adaugare question table
     let questionTable = window.document.getElementById("questionTable")
